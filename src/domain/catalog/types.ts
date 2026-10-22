@@ -72,6 +72,15 @@ export interface Station {
   readonly updatedAt: Date | null;
 }
 
+/**
+ * Identificadores que se usan cuando el organismo no informa el curso de agua.
+ *
+ * Son constantes del dominio porque el catalogo, la exportacion y la interfaz
+ * necesitan reconocer esas estaciones como "sin rio informado".
+ */
+export const unknownRiverId: RiverId = "sin-rio";
+export const unknownReachId: ReachId = "sin-rio-general";
+
 /** Resultado de normalizar el nombre crudo de un rio publicado. */
 export interface NormalizedRiver {
   readonly id: RiverId;

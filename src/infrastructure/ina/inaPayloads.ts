@@ -10,6 +10,7 @@
 import type { PercentileEntry, PercentileTable } from "@/domain/analytics/anomaly";
 import { normalizeRiverName } from "@/domain/catalog/riverNormalizer";
 import type { Station, Thresholds } from "@/domain/catalog/types";
+import { unknownReachId, unknownRiverId } from "@/domain/catalog/types";
 import type { TelemetryPoint } from "@/domain/telemetry/types";
 import {
   dischargeVariableId,
@@ -24,9 +25,6 @@ const argentinaOffsetMilliseconds = -3 * 60 * 60 * 1000;
 const argentinaOffsetSuffix = "-03:00";
 
 /** Rio y tramo que se usan cuando el organismo no informa el curso de agua. */
-export const unknownRiverId = "sin-rio";
-export const unknownReachId = "sin-rio-general";
-
 const unknownRiver = {
   id: unknownRiverId,
   name: "Sin rio informado",

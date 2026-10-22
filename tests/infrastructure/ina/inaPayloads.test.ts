@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { unknownReachId, unknownRiverId } from "@/domain/catalog/types";
 import {
   formatInaTimestamp,
   parseInaObservation,
@@ -6,8 +7,6 @@ import {
   parseInaStation,
   parseInaTimestamp,
   unitForVariable,
-  unknownReachId,
-  unknownRiverId,
 } from "@/infrastructure/ina/inaPayloads";
 import {
   firstObservationRow,

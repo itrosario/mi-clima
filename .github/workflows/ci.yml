@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  calidad:
+    name: Calidad, cobertura y build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Lint y formato (Biome)
+        run: npm run lint
+
+      - name: Reglas de diseno (Impeccable)
+        run: npm run design:check
+
+      - name: Chequeo de tipos
+        run: npm run check
+
+      - name: Tests con cobertura
+        run: npm run test:coverage
+
+      - name: Build
+        run: npm run build
+
+  e2e:
+    name: End-to-end y accesibilidad
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Instalar navegadores
+        run: npx playwright install --with-deps chromium
+
+      - name: Tests end-to-end
+        run: npm run e2e
+
+      - name: Publicar reporte
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

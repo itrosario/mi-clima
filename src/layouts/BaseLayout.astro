@@ -1,0 +1,87 @@
+---
+import "@/styles/fonts.css";
+import "@/styles/index.css";
+import LanguageSwitcher from "../presentation/components/shared/LanguageSwitcher.astro";
+import SiteFooter from "../presentation/components/shared/SiteFooter.astro";
+import SiteHeader from "../presentation/components/shared/SiteHeader.astro";
+import ThemeToggleButton from "../presentation/components/shared/ThemeToggleButton.astro";
+import { getTranslations } from "../presentation/i18n";
+import type { Locale } from "../presentation/i18n/locales";
+import { defaultLocale } from "../presentation/i18n/locales";
+
+interface Props {
+  /** Titulo de la pagina, ya traducido. */
+  title?: string;
+  /** Descripcion para buscadores y redes sociales, ya traducida. */
+  description?: string;
+  /** Idioma de la ruta. */
+  locale?: Locale;
+  /** Seccion activa del sitio, por ejemplo `/rios/`. */
+  currentSection?: string;
+}
+
+const { title, description, locale = defaultLocale, currentSection = "/" } = Astro.props;
+
+const translations = getTranslations(locale);
+const localePrefix = `/${locale}`;
+const resolvedTitle = title
+  ? `${title} | ${translations.site.fullTitle}`
+  : translations.site.fullTitle;
+const resolvedDescription = description ?? translations.site.description;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{resolvedTitle}</title>
+    <meta name="description" content={resolvedDescription} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonicalUrl.href} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#2c5f8f" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={translations.site.fullTitle} />
+    <meta property="og:title" content={resolvedTitle} />
+    <meta property="og:description" content={resolvedDescription} />
+    <meta property="og:url" content={canonicalUrl.href} />
+    <meta property="og:locale" content={locale === "es" ? "es_AR" : "en_US"} />
+
+    <script is:inline src="/theme-boot.js"></script>
+  </head>
+
+  <body>
+    <a class="visually-hidden" href="#contenido">Ir al contenido principal</a>
+
+    <slot name="banner" />
+
+    <SiteHeader
+      translations={translations}
+      localePrefix={localePrefix}
+      currentSection={currentSection}
+    >
+      <LanguageSwitcher
+        slot="actions"
+        locale={locale}
+        currentPath={Astro.url.pathname}
+        translations={translations}
+      />
+      <ThemeToggleButton slot="actions" translations={translations} />
+    </SiteHeader>
+
+    <main id="contenido">
+      <slot />
+    </main>
+
+    <SiteFooter translations={translations} localePrefix={localePrefix} />
+
+    <script>
+      import { initThemeToggle } from "@/presentation/scripts/themeToggle";
+
+      initThemeToggle(document);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+---
+import type { Locale } from "../../i18n/locales";
+import { localeLabels, supportedLocales, switchLocalePath } from "../../i18n/locales";
+import type { TranslationSchema } from "../../i18n/translations/es";
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+  translations: TranslationSchema;
+}
+
+const { locale, currentPath, translations } = Astro.props;
+---
+
+<div class="language-switcher" role="group" aria-label={translations.language.label}>
+  {
+    supportedLocales.map((supportedLocale) => (
+      <a
+        class="language-switcher__option"
+        href={switchLocalePath(currentPath, supportedLocale)}
+        lang={supportedLocale}
+        hreflang={supportedLocale}
+        aria-current={supportedLocale === locale ? "true" : undefined}
+      >
+        {localeLabels[supportedLocale]}
+      </a>
+    ))
+  }
+</div>

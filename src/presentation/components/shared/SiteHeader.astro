@@ -1,0 +1,58 @@
+---
+import type { TranslationSchema } from "../../i18n/translations/es";
+
+interface Props {
+  translations: TranslationSchema;
+  /** Prefijo de ruta del idioma activo, por ejemplo `/es`. */
+  localePrefix: string;
+  /** Seccion activa del sitio, por ejemplo `/rios/`. */
+  currentSection: string;
+}
+
+const { translations, localePrefix, currentSection } = Astro.props;
+
+const navigationItems = [
+  { section: "/", label: translations.nav.dashboard },
+  { section: "/alertas/", label: translations.nav.alerts },
+  { section: "/rios/", label: translations.nav.rivers },
+  { section: "/clima/", label: translations.nav.weather },
+  { section: "/estadisticas/", label: translations.nav.statistics },
+  { section: "/descargas/", label: translations.nav.downloads },
+  { section: "/fuentes/", label: translations.nav.sources },
+] as const;
+
+function sectionHref(localePrefix: string, section: string): string {
+  return section === "/" ? `${localePrefix}/` : `${localePrefix}${section}`;
+}
+---
+
+<header class="site-header">
+  <div class="u-container site-header__inner">
+    <a class="site-header__brand" href={`${localePrefix}/`}>
+      <span class="site-header__title">{translations.site.title}</span>
+      <span class="site-header__byline">{translations.site.byline}</span>
+    </a>
+
+    <nav class="site-header__nav" aria-label={translations.site.fullTitle}>
+      <ul class="site-nav__list">
+        {
+          navigationItems.map((item) => (
+            <li>
+              <a
+                class="site-nav__link"
+                href={sectionHref(localePrefix, item.section)}
+                aria-current={currentSection === item.section ? "page" : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      <slot name="actions" />
+    </div>
+  </div>
+</header>

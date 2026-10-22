@@ -1,0 +1,11 @@
+/**
+ * Orden de las capas de cascada. Debe permanecer en la primera linea util del
+ * archivo: las capas se resuelven en el orden declarado aqui.
+ */
+@layer reset, tokens, base, components, utilities;
+
+@import "./reset.css";
+@import "./tokens.css";
+@import "./base.css";
+@import "./components.css";
+@import "./utilities.css";

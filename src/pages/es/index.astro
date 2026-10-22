@@ -1,0 +1,22 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getTranslations } from "../../presentation/i18n";
+
+const locale = "es" as const;
+const translations = getTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  currentSection="/"
+  title={translations.dashboard.title}
+  description={translations.site.description}
+>
+  <div class="u-container">
+    <section class="page-header">
+      <p class="page-header__eyebrow">{translations.site.fullTitle}</p>
+      <h1>{translations.dashboard.title}</h1>
+      <p class="page-header__lead">{translations.dashboard.lead}</p>
+    </section>
+  </div>
+</BaseLayout>

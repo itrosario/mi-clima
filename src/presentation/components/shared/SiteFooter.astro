@@ -1,0 +1,71 @@
+---
+import type { TranslationSchema } from "../../i18n/translations/es";
+
+interface Props {
+  translations: TranslationSchema;
+  /** Prefijo de ruta del idioma activo, por ejemplo `/es`. */
+  localePrefix: string;
+}
+
+const { translations, localePrefix } = Astro.props;
+
+const sourceLinks = [
+  { href: "https://alerta.ina.gob.ar/", label: "INA" },
+  { href: "https://inta.gob.ar/", label: "INTA" },
+  { href: "https://open-meteo.com/", label: "Open-Meteo" },
+] as const;
+
+const projectLinks = [
+  { href: `${localePrefix}/`, label: translations.nav.dashboard },
+  { href: `${localePrefix}fuentes/`, label: translations.nav.sources },
+  { href: `${localePrefix}descargas/`, label: translations.nav.downloads },
+] as const;
+---
+
+<footer class="site-footer">
+  <div class="u-container">
+    <div class="site-footer__grid">
+      <div>
+        <p class="site-footer__heading">{translations.footer.about}</p>
+        <p class="prose">{translations.site.tagline}</p>
+      </div>
+
+      <div>
+        <p class="site-footer__heading">{translations.nav.sources}</p>
+        <ul class="site-footer__list">
+          {
+            sourceLinks.map((link) => (
+              <li>
+                <a
+                  class="site-footer__link"
+                  href={link.href}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div>
+        <p class="site-footer__heading">{translations.footer.data}</p>
+        <ul class="site-footer__list">
+          {
+            projectLinks.map((link) => (
+              <li>
+                <a class="site-footer__link" href={link.href}>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <p class="site-footer__legal">{translations.footer.disclaimer}</p>
+  </div>
+</footer>

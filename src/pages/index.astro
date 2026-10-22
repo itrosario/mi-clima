@@ -1,0 +1,27 @@
+---
+/**
+ * Raiz del sitio. Redirige a la version en castellano mediante refresco de
+ * pagina y enlace canonico, para que el sitio funcione como HTML estatico
+ * puro sin depender de un servidor.
+ */
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mi Clima by IT Rosario</title>
+    <link rel="canonical" href="/es/" />
+    <meta http-equiv="refresh" content="0; url=/es/" />
+    <meta name="robots" content="noindex, follow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <p>
+      <a href="/es/">Continuar en castellano</a>
+      &middot;
+      <a href="/en/" hreflang="en">Continue in English</a>
+    </p>
+  </body>
+</html>

@@ -15,7 +15,8 @@
       "!**/test-results",
       "!**/.astro",
       "!**/public/fonts",
-      "!**/*.astro"
+      "!**/*.astro",
+      "!**/*.md"
     ]
   },
   "formatter": {

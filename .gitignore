@@ -1,0 +1,23 @@
+# Dependencias
+node_modules/
+
+# Artefactos de build
+dist/
+.astro/
+.wrangler/
+
+# Reportes de pruebas
+coverage/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+
+# Variables de entorno
+.env
+.env.production
+.env.local
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "mi-clima-by-it-rosario",
+  "name": "mi-clima",
   "compatibility_date": "2026-10-22",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {

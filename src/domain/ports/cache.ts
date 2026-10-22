@@ -1,9 +1,9 @@
 /**
  * Puerto de cache.
  *
- * Dos implementaciones conviven: `sessionStorage` para el dataset del dia y
- * la Cache API del navegador para las tablas de percentiles, que son grandes
- * y cambian poco.
+ * Dos implementaciones conviven: `sessionStorage` para el catalogo y los
+ * datasets pequenos, y una cache en memoria para las tablas de percentiles,
+ * que pesan varios megabytes. Ambas mueren al cerrar la pestana.
  */
 
 export interface CachePort {

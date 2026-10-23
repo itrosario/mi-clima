@@ -14,6 +14,7 @@ import { toJson } from "@/domain/export/json";
 import { toText } from "@/domain/export/text";
 import type { ExportDataset, ExportFormat } from "@/domain/export/types";
 import { mimeTypeByFormat } from "@/domain/export/types";
+import type { StationReading } from "../station/loadStationReadings";
 
 export interface ExportBuildRequest {
   readonly inputs: readonly SeriesExportInput[];
@@ -51,5 +52,19 @@ export function buildExport(request: ExportBuildRequest): ExportFile {
     ),
     mimeType: mimeTypeByFormat[request.format],
     content: serializeDataset(dataset, request.format),
+  };
+}
+
+/** Adapta una lectura de estacion a una fila exportable con procedencia. */
+export function toSeriesExportInput(
+  reading: StationReading,
+  variableName: string,
+  sourceName: string,
+): SeriesExportInput {
+  return {
+    station: reading.station,
+    series: reading.series,
+    variableName,
+    sourceName,
   };
 }

@@ -53,7 +53,13 @@ export interface StationReading {
   readonly dailyExtremes: readonly DailyExtreme[];
 }
 
-function toReading(
+/**
+ * Evalua una serie ya obtenida y arma la lectura completa de la estacion.
+ *
+ * Se expone para que otros casos de uso que ya pidieron la serie (por ejemplo
+ * el calculo de estadisticas) no vuelvan a consultarla.
+ */
+export function buildStationReading(
   station: Station,
   series: TelemetrySeries,
   evaluatedAtFallback: Date,
@@ -108,7 +114,7 @@ export async function loadStationReadings(
         signal,
       );
 
-      return toReading(station, series, evaluatedAtFallback, movingWindowDays);
+      return buildStationReading(station, series, evaluatedAtFallback, movingWindowDays);
     },
   );
 }

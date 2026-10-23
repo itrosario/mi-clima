@@ -73,6 +73,24 @@ describe("loadCorridorDashboard", () => {
     expect(dashboard.hasEmergency).toBe(true);
     expect(dashboard.summary.evacuatingStationIds).toEqual(["34"]);
     expect(dashboard.comparison.map((entry) => entry.stationId)).toEqual(["34"]);
-    expect(dashboard.range.from.getTime()).toBe(now.getTime() - 3 * millisecondsPerDay);
+  });
+
+  it("respeta un rango explicito por sobre la ventana de dias", async () => {
+    const source = new FakeHydrologySource({ "34": seriesAt("34", 5.1) });
+    const range = {
+      from: new Date("2026-09-01T00:00:00.000Z"),
+      to: new Date("2026-09-30T00:00:00.000Z"),
+    };
+
+    const dashboard = await loadCorridorDashboard([createStation({ id: "34" })], {
+      hydrologySource: source,
+      clock: new FakeClock(now),
+      windowDays: 3,
+      range,
+    });
+
+    expect(dashboard.range).toBe(range);
+    expect(source.calls[0]?.request.from).toBe(range.from);
+    expect(source.calls[0]?.request.to).toBe(range.to);
   });
 });

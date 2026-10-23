@@ -1,10 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { buildExport, serializeDataset } from "@/application/export/buildExport";
+import {
+  buildExport,
+  serializeDataset,
+  toSeriesExportInput,
+} from "@/application/export/buildExport";
 import { inaAttribution } from "@/application/shared/attributions";
 import type { DatasetDescriptor, SeriesExportInput } from "@/domain/export/dataset";
 import { buildTelemetryDataset } from "@/domain/export/dataset";
 import { createSeries } from "@/domain/telemetry/series";
 import { createPoint, createStation } from "../../support/factories";
+import { createReading } from "../../support/readingFactory";
 
 const generatedAt = new Date("2026-10-22T12:00:00.000Z");
 
@@ -68,5 +73,18 @@ describe("buildExport", () => {
     expect(textFile.fileName).toBe("rosario-2026-10-22.txt");
     expect(textFile.mimeType).toBe("text/plain;charset=utf-8");
     expect(csvFile.content).toContain("Rosario");
+  });
+});
+
+describe("toSeriesExportInput", () => {
+  it("conserva estacion, serie y procedencia", () => {
+    const reading = createReading();
+
+    const input = toSeriesExportInput(reading, "Altura del agua", "INA");
+
+    expect(input.station).toBe(reading.station);
+    expect(input.series).toBe(reading.series);
+    expect(input.variableName).toBe("Altura del agua");
+    expect(input.sourceName).toBe("INA");
   });
 });

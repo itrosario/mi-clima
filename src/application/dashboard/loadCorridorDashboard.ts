@@ -22,6 +22,8 @@ export const defaultDashboardWindowDays = 7;
 export interface CorridorDashboardDependencies extends StationReadingsDependencies {
   /** Dias de historia que acompanan a cada lectura. */
   readonly windowDays?: number;
+  /** Rango explicito; si se informa, tiene prioridad sobre `windowDays`. */
+  readonly range?: DateRange;
 }
 
 export interface CorridorDashboard {
@@ -47,7 +49,9 @@ export async function loadCorridorDashboard(
   signal?: AbortSignal,
 ): Promise<CorridorDashboard> {
   const generatedAt = dependencies.clock.now();
-  const range = rangeEndingAt(generatedAt, dependencies.windowDays ?? defaultDashboardWindowDays);
+  const range =
+    dependencies.range ??
+    rangeEndingAt(generatedAt, dependencies.windowDays ?? defaultDashboardWindowDays);
 
   const readings = await loadStationReadings({ stations, range }, dependencies, signal);
 

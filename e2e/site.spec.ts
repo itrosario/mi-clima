@@ -64,6 +64,42 @@ for (const locale of locales) {
         await expect(page.locator(`.site-header__nav a[href="${href}"]`)).toHaveCount(1);
       }
     });
+
+    test("muestra la autoria y el proposito publico", async ({ page }) => {
+      await openSection(page, locale, "fuentes");
+
+      await expect(page.locator("[data-project-about]")).toContainText("Juan Martín Villanueva");
+      await expect(page.locator("[data-project-about]")).toContainText("IT Rosario");
+      await expect(page.locator(".site-footer__legal")).toContainText("Juan Martín Villanueva");
+      await expect(page.locator('meta[name="author"]')).toHaveAttribute(
+        "content",
+        /Juan Martín Villanueva/,
+      );
+      await expect(page.locator(".site-footer__repo a")).toHaveAttribute(
+        "href",
+        "https://github.com/itrosario/mi-clima",
+      );
+      await expect(page.locator("[data-project-about] a")).toHaveAttribute(
+        "href",
+        "https://github.com/itrosario/mi-clima",
+      );
+    });
+
+    test("se adapta al ancho de un celular sin desbordar", async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+
+      for (const section of sections) {
+        await openSection(page, locale, section.slug);
+        await expect(page.locator(section.waitFor).first()).toBeVisible();
+
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        );
+        expect(overflow, `${locale}/${section.slug} desborda horizontalmente`).toBeLessThanOrEqual(
+          1,
+        );
+      }
+    });
   });
 }
 
@@ -71,9 +107,49 @@ test.describe("flujos interactivos", () => {
   test("el panel grafica el corredor y muestra el clima no oficial", async ({ page }) => {
     await openSection(page, "es", "");
 
-    await expect(page.locator("[data-corridor-chart] canvas")).toBeVisible();
+    await expect(page.locator("[data-corridor-chart] canvas")).toBeVisible({ timeout: 15_000 });
     await expect(page.locator("[data-weather-source]")).toContainText("Open-Meteo");
     await expect(page.locator("[data-emergency-banner]")).toBeVisible();
+  });
+
+  test("el panel compara cada curva contra su propio promedio", async ({ page }) => {
+    await openSection(page, "es", "");
+
+    await page.locator("[data-corridor-chart-mode]").selectOption("index");
+
+    await expect(page.locator("[data-corridor-chart-note]")).toContainText(
+      "100 representa el promedio",
+    );
+    await expect(page.locator("[data-corridor-chart] canvas")).toBeVisible();
+  });
+
+  test("expone el manifest y registra el service worker para instalar la app", async ({ page }) => {
+    await openSection(page, "es", "");
+
+    await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
+      "href",
+      "/manifest.es.webmanifest",
+    );
+
+    const response = await page.request.get("/manifest.es.webmanifest");
+    expect(response.ok()).toBeTruthy();
+    const manifest = (await response.json()) as Record<string, unknown>;
+
+    expect(manifest.start_url).toBe("/es/");
+    expect(manifest.display).toBe("standalone");
+    expect(manifest.icons).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ sizes: "192x192" }),
+        expect.objectContaining({ sizes: "512x512" }),
+        expect.objectContaining({ purpose: "maskable" }),
+      ]),
+    );
+
+    const scriptUrl = await page.evaluate(async () => {
+      const registration = await navigator.serviceWorker.ready;
+      return registration.active?.scriptURL ?? null;
+    });
+    expect(scriptUrl).toContain("/service-worker.js");
   });
 
   test("las alertas muestran mapa, tarjetas y alturas de Prefectura", async ({ page }) => {

@@ -1,18 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Mi Clima by IT Rosario">
-  <rect width="32" height="32" rx="7" fill="#2c5f8f" />
+  <rect width="32" height="32" rx="7" fill="#0b6b8a" />
+  <circle cx="23" cy="9" r="4" fill="#f4f7f9" />
   <path
-    d="M4 20c3.2 0 3.2-3 6.4-3s3.2 3 6.4 3 3.2-3 6.4-3 3.2 3 4.8 3"
+    d="M4 20c2.1 0 2.1-2 4.3-2s2.1 2 4.3 2 2.1-2 4.3-2 2.1 2 4.3 2 2.1-2 4.3-2 2.1 2 4.3 2"
     fill="none"
-    stroke="#f6f2ea"
-    stroke-width="2.4"
+    stroke="#d8edf4"
+    stroke-width="2.2"
     stroke-linecap="round"
   />
   <path
-    d="M4 25c3.2 0 3.2-3 6.4-3s3.2 3 6.4 3 3.2-3 6.4-3 3.2 3 4.8 3"
+    d="M4 25c2.1 0 2.1-2 4.3-2s2.1 2 4.3 2 2.1-2 4.3-2 2.1 2 4.3 2 2.1-2 4.3-2 2.1 2 4.3 2"
     fill="none"
-    stroke="#7ba3d1"
-    stroke-width="2.4"
+    stroke="#69c4df"
+    stroke-width="2.2"
     stroke-linecap="round"
   />
-  <circle cx="16" cy="10" r="3.4" fill="#f6f2ea" />
 </svg>

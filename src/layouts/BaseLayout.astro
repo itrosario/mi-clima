@@ -29,19 +29,30 @@ const resolvedTitle = title
   : translations.site.fullTitle;
 const resolvedDescription = description ?? translations.site.description;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+const manifestHref = locale === "es" ? "/manifest.es.webmanifest" : "/manifest.en.webmanifest";
 ---
 
 <!doctype html>
 <html lang={locale}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{resolvedTitle}</title>
     <meta name="description" content={resolvedDescription} />
+    <meta name="author" content={`${translations.site.author} - IT Rosario`} />
     <meta name="generator" content={Astro.generator} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="application-name" content={translations.site.title} />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content={translations.site.title} />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="canonical" href={canonicalUrl.href} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="theme-color" content="#2c5f8f" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href={manifestHref} />
+    <meta name="theme-color" content="#f4f7f9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b151a" media="(prefers-color-scheme: dark)" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={translations.site.fullTitle} />
@@ -79,9 +90,14 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin)
     <SiteFooter translations={translations} localePrefix={localePrefix} />
 
     <script>
+      import { registerServiceWorker } from "@/presentation/scripts/serviceWorkerRegistration";
       import { initThemeToggle } from "@/presentation/scripts/themeToggle";
 
       initThemeToggle(document);
+
+      if (import.meta.env.PROD) {
+        registerServiceWorker("serviceWorker" in navigator ? navigator.serviceWorker : undefined);
+      }
     </script>
   </body>
 </html>

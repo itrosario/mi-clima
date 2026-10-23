@@ -53,6 +53,27 @@ const sources = [
       lead={translations.sources.lead}
     />
 
+    <section class="section" aria-labelledby="sources-about-title" data-project-about>
+      <h2 id="sources-about-title" class="section__title">
+        {translations.sources.aboutTitle}
+      </h2>
+      <p class="prose"><strong>{translations.site.author}</strong> — IT Rosario</p>
+      <p class="prose">{translations.sources.aboutLead}</p>
+      <p class="prose">{translations.sources.aboutPurpose}</p>
+      <p class="prose">{translations.sources.aboutIntegrity}</p>
+      <p class="prose">
+        {translations.sources.aboutRepository}
+        <a
+          class="text-link"
+          href="https://github.com/itrosario/mi-clima"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          github.com/itrosario/mi-clima
+        </a>
+      </p>
+    </section>
+
     <div class="source-grid">
       {
         sources.map((source) => (

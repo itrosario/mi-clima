@@ -12,15 +12,23 @@ import type { EChartsOption } from "echarts";
 export const chartPalette = [
   "#0f766e",
   "#1d4ed8",
-  "#b45309",
-  "#b91c1c",
+  "#0e7490",
   "#6d28d9",
-  "#0369a1",
+  "#b91c1c",
+  "#15803d",
 ] as const;
+
+/** Color neutro de la linea de referencia, visible en ambos temas. */
+export const chartReferenceLineColor = "#7c8f99";
 
 export interface ChartSeriesInput {
   readonly name: string;
   readonly values: readonly (number | null)[];
+}
+
+export interface ReferenceLineInput {
+  readonly value: number;
+  readonly label: string;
 }
 
 export interface LineChartInput {
@@ -29,6 +37,7 @@ export interface LineChartInput {
   readonly unit: string;
   /** Descripcion para lectores de pantalla. */
   readonly description: string;
+  readonly referenceLine?: ReferenceLineInput;
 }
 
 export interface BarChartInput {
@@ -48,7 +57,7 @@ export function buildLineChartOption(input: LineChartInput): EChartsOption {
     tooltip: { trigger: "axis", valueFormatter: (value) => formatTooltipValue(value, input.unit) },
     xAxis: { type: "category", data: [...input.categories], boundaryGap: false },
     yAxis: { type: "value", name: input.unit, scale: true },
-    series: input.series.map((series) => ({
+    series: input.series.map((series, seriesIndex) => ({
       name: series.name,
       type: "line",
       data: [...series.values],
@@ -56,6 +65,24 @@ export function buildLineChartOption(input: LineChartInput): EChartsOption {
       showSymbol: false,
       lineStyle: { width: 2 },
       emphasis: { focus: "series" },
+      ...(seriesIndex === 0 && input.referenceLine !== undefined
+        ? {
+            markLine: {
+              silent: true,
+              symbol: "none",
+              lineStyle: {
+                type: "dashed" as const,
+                color: chartReferenceLineColor,
+                width: 1,
+              },
+              label: {
+                formatter: input.referenceLine.label,
+                position: "insideEndTop" as const,
+              },
+              data: [{ yAxis: input.referenceLine.value }],
+            },
+          }
+        : {}),
     })),
   };
 }

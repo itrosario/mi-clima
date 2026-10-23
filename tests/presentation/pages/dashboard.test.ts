@@ -95,6 +95,66 @@ describe("startDashboardPage", () => {
     expect(option.series.map((series) => series.name)).toContain("Rosario");
   });
 
+  it("normaliza el grafico contra el promedio al cambiar la vista", async () => {
+    const document = prepareDocument();
+    const hydrology = new FakeHydrologySource({ "34": corridorSeries("34", 5.1) });
+    const chart = createFakeChartFactory();
+    const modeControl = document.createElement("select");
+    modeControl.setAttribute("data-corridor-chart-mode", "");
+    modeControl.innerHTML = `
+      <option value="absolute">Nivel absoluto</option>
+      <option value="index">Índice vs. promedio</option>
+    `;
+    const chartNote = document.createElement("p");
+    chartNote.setAttribute("data-corridor-chart-note", "");
+    document.body.append(modeControl, chartNote);
+
+    await startDashboardPage({
+      document,
+      services: createPageServices({ hydrology }),
+      chartFactory: chart.factory,
+    });
+
+    const render = chart.renderer.render as ReturnType<typeof vi.fn>;
+    const absoluteOption = render.mock.calls[0]?.[0] as {
+      yAxis: { name: string };
+      series: { markLine?: unknown }[];
+    };
+
+    expect(absoluteOption.yAxis.name).toBe("m");
+    expect(absoluteOption.series[0]?.markLine).toBeUndefined();
+    expect(chartNote.textContent).toContain("Nivel medio diario");
+
+    modeControl.value = "index";
+    modeControl.dispatchEvent(new Event("change"));
+
+    await vi.waitFor(() => expect(render).toHaveBeenCalledTimes(2));
+
+    const indexOption = render.mock.calls[1]?.[0] as {
+      yAxis: { name: string };
+      series: { markLine?: { data: { yAxis: number }[] } }[];
+    };
+    expect(indexOption.yAxis.name).toBe("% del promedio");
+    expect(indexOption.series[0]?.markLine?.data).toEqual([{ yAxis: 100 }]);
+    expect(chartNote.textContent).toContain("100");
+  });
+
+  it("no dibuja el grafico si falta el contenedor", async () => {
+    const document = prepareDocument();
+    requireElement(document, "[data-corridor-chart]").remove();
+    const chart = createFakeChartFactory();
+
+    await startDashboardPage({
+      document,
+      services: createPageServices({
+        hydrology: new FakeHydrologySource({ "34": corridorSeries("34", 5.1) }),
+      }),
+      chartFactory: chart.factory,
+    });
+
+    expect(chart.factory).not.toHaveBeenCalled();
+  });
+
   it("muestra el cartel de evacuacion cuando una estacion supera ese umbral", async () => {
     const document = prepareDocument();
     const hydrology = new FakeHydrologySource({ "34": corridorSeries("34", 5.4) });

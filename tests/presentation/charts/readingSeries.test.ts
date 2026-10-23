@@ -3,9 +3,25 @@ import { movingAverage } from "@/domain/analytics/variability";
 import {
   buildCorridorChartInput,
   buildStationChartInput,
+  type CorridorChartOptions,
 } from "@/presentation/charts/readingSeries";
 import { createPoint, createStation } from "../../support/factories";
 import { createReading } from "../../support/readingFactory";
+
+const absoluteOptions: CorridorChartOptions = {
+  locale: "es",
+  unit: "m",
+  description: "Corredor",
+  mode: "absolute",
+  averageReferenceLabel: "100 = promedio",
+};
+
+const indexOptions: CorridorChartOptions = {
+  ...absoluteOptions,
+  unit: "% del promedio",
+  description: "Índice del corredor",
+  mode: "index",
+};
 
 describe("buildCorridorChartInput", () => {
   it("alinea los promedios diarios por fecha", () => {
@@ -21,13 +37,49 @@ describe("buildCorridorChartInput", () => {
       points: [createPoint("2026-10-21T03:00:00.000Z", 3)],
     });
 
-    const input = buildCorridorChartInput([first, second], "es", "m", "Corredor");
+    const input = buildCorridorChartInput([first, second], absoluteOptions);
 
     expect(input.categories).toEqual(["21/10", "22/10"]);
     expect(input.series).toEqual([
       { name: "Rosario", values: [4, 5] },
       { name: "Villa", values: [3, null] },
     ]);
+    expect(input.referenceLine).toBeUndefined();
+  });
+
+  it("expresa cada curva como porcentaje de su propio promedio", () => {
+    const first = createReading({
+      station: createStation({ id: "34", name: "Rosario" }),
+      points: [
+        createPoint("2026-10-21T03:00:00.000Z", 4),
+        createPoint("2026-10-22T03:00:00.000Z", 6),
+      ],
+    });
+    const second = createReading({
+      station: createStation({ id: "35", name: "Villa" }),
+      points: [createPoint("2026-10-21T03:00:00.000Z", 3)],
+    });
+
+    const input = buildCorridorChartInput([first, second], indexOptions);
+
+    expect(input.series).toEqual([
+      { name: "Rosario", values: [80, 120] },
+      { name: "Villa", values: [100, null] },
+    ]);
+    expect(input.unit).toBe("% del promedio");
+    expect(input.description).toBe("Índice del corredor");
+    expect(input.referenceLine).toEqual({ value: 100, label: "100 = promedio" });
+  });
+
+  it("deja el indice vacio cuando el promedio de la estacion es cero", () => {
+    const reading = createReading({
+      station: createStation({ id: "34", name: "Rosario" }),
+      points: [createPoint("2026-10-21T03:00:00.000Z", 0)],
+    });
+
+    const input = buildCorridorChartInput([reading], indexOptions);
+
+    expect(input.series[0]?.values).toEqual([null]);
   });
 
   it("omite estaciones sin dias observados", () => {
@@ -37,16 +89,17 @@ describe("buildCorridorChartInput", () => {
       points: [],
     });
 
-    const input = buildCorridorChartInput([withData, withoutData], "en", "m", "Corredor");
+    const input = buildCorridorChartInput([withData, withoutData], absoluteOptions);
 
     expect(input.series.map((series) => series.name)).toEqual(["Rosario"]);
   });
 
   it("devuelve un grafico vacio sin lecturas", () => {
-    const input = buildCorridorChartInput([], "es", "m", "Corredor");
+    const input = buildCorridorChartInput([], indexOptions);
 
     expect(input.categories).toEqual([]);
     expect(input.series).toEqual([]);
+    expect(input.referenceLine).toEqual({ value: 100, label: "100 = promedio" });
   });
 });
 

@@ -27,6 +27,10 @@ export function createChartRenderer(
   module: EChartsModuleLike,
 ): ChartRenderer {
   const instance = module.init(container);
+  const resizeObserver = new ResizeObserver(() => {
+    instance.resize();
+  });
+  resizeObserver.observe(container);
 
   return {
     render: (option) => {
@@ -36,6 +40,7 @@ export function createChartRenderer(
       instance.resize();
     },
     dispose: () => {
+      resizeObserver.disconnect();
       instance.dispose();
     },
   };

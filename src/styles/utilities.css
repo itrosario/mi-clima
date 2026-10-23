@@ -24,6 +24,16 @@
     white-space: nowrap;
   }
 
+  .text-link {
+    color: var(--color-accent-text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .text-link:hover {
+    color: var(--color-accent-strong);
+  }
+
   .u-stack {
     display: flex;
     flex-direction: column;
@@ -52,7 +62,8 @@
     width: 100%;
     max-width: var(--width-content);
     margin-inline: auto;
-    padding-inline: var(--width-gutter);
+    padding-inline-start: max(var(--width-gutter), env(safe-area-inset-left));
+    padding-inline-end: max(var(--width-gutter), env(safe-area-inset-right));
   }
 
   .u-container--narrow {

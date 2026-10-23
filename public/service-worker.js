@@ -2,8 +2,8 @@
  * Service worker de Mi Clima by IT Rosario.
  *
  * Solo guarda el armazon de la aplicacion (paginas, iconos y assets con hash).
- * Los datos meteorologicos e hidrologicos nunca se cachean aca: cada apertura
- * consulta las fuentes oficiales, tal como exige el sitio.
+ * Los datos meteorologicos e hidrologicos nunca se cachean aca: las consultas
+ * van al Worker, que comparte una cache de borde de una hora entre visitantes.
  */
 
 const staticCacheName = "mi-clima-static-v1";

@@ -2,15 +2,25 @@
  * Cliente del servicio de datos del INA.
  *
  * El organismo solo responde a `POST` con formulario codificado: los
- * parametros enviados por `GET` se ignoran en silencio. Este cliente encapsula
- * ese protocolo, valida el sobre de respuesta y deja a los adaptadores el
- * trabajo de traducir filas a objetos del dominio.
+ * parametros enviados por `GET` se ignoran en silencio. En produccion el cliente
+ * habla con el proxy del Worker, que reconstruye ese formulario y comparte la
+ * cache de borde; en desarrollo puede usar el protocolo directo. El cliente
+ * valida el sobre de respuesta y deja a los adaptadores el trabajo de traducir
+ * filas a objetos del dominio.
  */
 
-import type { HttpPort } from "@/domain/ports/http";
+import type { HttpPort, HttpRequest } from "@/domain/ports/http";
 import { isRecord } from "../parsing/jsonValues";
 
 export const inaBaseUrl = "https://alerta.ina.gob.ar/pub/datos/";
+export const inaProxyUrl = "/api/ina";
+
+export type InaApiTransport = "direct" | "proxy";
+
+export interface InaApiClientOptions {
+  readonly baseUrl?: string;
+  readonly transport?: InaApiTransport;
+}
 
 export type InaRow = Readonly<Record<string, unknown>>;
 
@@ -33,34 +43,33 @@ function isSuccessfulStatus(status: number): boolean {
 export class InaApiClient {
   private readonly http: HttpPort;
   private readonly baseUrl: string;
+  private readonly transport: InaApiTransport;
 
-  constructor(http: HttpPort, baseUrl: string = inaBaseUrl) {
+  constructor(http: HttpPort, options: InaApiClientOptions | string = {}) {
     this.http = http;
-    this.baseUrl = baseUrl;
+
+    if (typeof options === "string") {
+      this.baseUrl = options;
+      this.transport = "direct";
+    } else {
+      this.baseUrl = options.baseUrl ?? inaProxyUrl;
+      this.transport = options.transport ?? "proxy";
+    }
   }
 
   /**
    * Ejecuta un recurso y devuelve sus filas.
    *
-   * Una respuesta sin `data` significa "sin resultados" (el INA contesta 200
-   * con un mensaje), no un error de transporte: se devuelve una lista vacia.
+   * En produccion la consulta pasa por el proxy del Worker, que comparte la
+   * cache entre visitantes. El modo directo solo se usa en desarrollo y en las
+   * pruebas de integracion contra el protocolo real del INA.
    */
   async request(
     resource: string,
     parameters: Readonly<Record<string, string>> = {},
     signal?: AbortSignal,
   ): Promise<readonly InaRow[]> {
-    const body = new URLSearchParams({ request: resource, format: "json", ...parameters });
-
-    const response = await this.http.send(
-      {
-        url: this.baseUrl,
-        method: "POST",
-        headers: { "content-type": "application/x-www-form-urlencoded" },
-        body: body.toString(),
-      },
-      signal,
-    );
+    const response = await this.http.send(this.buildRequest(resource, parameters), signal);
 
     if (!isSuccessfulStatus(response.status)) {
       throw new InaApiError(
@@ -71,6 +80,28 @@ export class InaApiClient {
     }
 
     return this.readRows(response.body, resource);
+  }
+
+  private buildRequest(
+    resource: string,
+    parameters: Readonly<Record<string, string>>,
+  ): HttpRequest {
+    const body = new URLSearchParams({ request: resource, format: "json", ...parameters });
+
+    if (this.transport === "direct") {
+      return {
+        url: this.baseUrl,
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        body: body.toString(),
+      };
+    }
+
+    return {
+      url: `${this.baseUrl}?${body.toString()}`,
+      method: "GET",
+      headers: { accept: "application/json" },
+    };
   }
 
   private readRows(payload: string, resource: string): readonly InaRow[] {

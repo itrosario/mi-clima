@@ -13,6 +13,7 @@ import {
   filterStationsByName,
   groupStationsByRiver,
 } from "../rendering/rivers";
+import { startAutoRefresh } from "../runtime/autoRefresh";
 import { createTextElement, queryElement, renderInto } from "../runtime/dom";
 import { readPageLocale, resolvePageContext, runPage } from "../runtime/pageRuntime";
 import type { PageOptions } from "./pageOptions";
@@ -66,5 +67,9 @@ export async function startRiversPage(options: PageOptions): Promise<void> {
     search.oninput = renderList;
   }
 
-  await runPage({ document, load, render, fallbackErrorMessage: translations.common.error });
+  const run = (): Promise<void> =>
+    runPage({ document, load, render, fallbackErrorMessage: translations.common.error });
+
+  await run();
+  startAutoRefresh({ document, refresh: run });
 }

@@ -12,7 +12,7 @@ import {
   defaultDashboardWindowDays,
   loadCorridorDashboard,
 } from "@/application/dashboard/loadCorridorDashboard";
-import { rangeEndingAt } from "@/application/shared/time";
+import { rangeEndingAtHour } from "@/application/shared/time";
 import { loadWeather, type WeatherView } from "@/application/weather/loadWeather";
 import type { DateRange } from "@/domain/telemetry/types";
 import { buildLineChartOption } from "../charts/chartOptions";
@@ -24,6 +24,7 @@ import { evacuatingStationNames, updateEmergencyBanner } from "../rendering/emer
 import { createStatusLegend } from "../rendering/kit";
 import { createComparisonTable, createSummaryTiles } from "../rendering/tables";
 import { renderWeatherBlocks } from "../rendering/weather";
+import { startAutoRefresh } from "../runtime/autoRefresh";
 import { createTextElement, queryElement, renderInto } from "../runtime/dom";
 import {
   readFormRange,
@@ -80,12 +81,12 @@ export async function startDashboardPage(options: PageOptions): Promise<void> {
   let chart: ChartRenderer | null = null;
 
   if (form !== null) {
-    writeFormRange(form, rangeEndingAt(services.clock.now(), defaultDashboardWindowDays));
+    writeFormRange(form, rangeEndingAtHour(services.clock.now(), defaultDashboardWindowDays));
   }
 
   const readRange = (): DateRange =>
     (form === null ? null : readFormRange(form)) ??
-    rangeEndingAt(services.clock.now(), defaultDashboardWindowDays);
+    rangeEndingAtHour(services.clock.now(), defaultDashboardWindowDays);
 
   const currentChartMode = (): CorridorChartMode =>
     chartModeControl !== null && chartModeControl.value === "index" ? "index" : "absolute";
@@ -197,4 +198,5 @@ export async function startDashboardPage(options: PageOptions): Promise<void> {
   }
 
   await run();
+  startAutoRefresh({ document, refresh: run });
 }

@@ -232,7 +232,47 @@ function requestResource(body: string | null): string | null {
 }
 
 /** Intercepta todas las fuentes externas y el proxy propio del sitio. */
+function inaDataFor(resource: string | null, params: URLSearchParams): unknown {
+  if (resource === "estaciones") {
+    return stationRows();
+  }
+
+  if (resource === "datos") {
+    return observationRowsFor(Number(params.get("siteCode")));
+  }
+
+  if (resource === "series") {
+    return seriesRows;
+  }
+
+  if (resource === "percentiles") {
+    return percentileRows;
+  }
+
+  return [];
+}
+
 export async function mockDataSources(page: Page): Promise<void> {
+  await page.route("**/api/ina*", async (route) => {
+    const url = new URL(route.request().url());
+
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: inaDataFor(url.searchParams.get("request"), url.searchParams),
+      }),
+    });
+  });
+
+  await page.route("**/api/clima*", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(weatherPayload),
+    });
+  });
+
   await page.route("https://alerta.ina.gob.ar/**", async (route) => {
     const request = route.request();
     const resource = requestResource(request.postData());

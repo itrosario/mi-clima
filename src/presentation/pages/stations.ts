@@ -7,7 +7,7 @@
  */
 
 import { loadStationCatalog } from "@/application/catalog/loadStationCatalog";
-import { rangeEndingAt } from "@/application/shared/time";
+import { rangeEndingAtHour } from "@/application/shared/time";
 import {
   loadStationReadings,
   type StationReading,
@@ -21,6 +21,7 @@ import { getTranslations } from "../i18n";
 import { createStatusLegend } from "../rendering/kit";
 import { createStationCard, type StationCardLabels } from "../rendering/stationCard";
 import { createStationCatalogue } from "../rendering/stations";
+import { startAutoRefresh } from "../runtime/autoRefresh";
 import { createEmptyState, createTextElement, queryElement, renderInto } from "../runtime/dom";
 import {
   readPageLocale,
@@ -111,7 +112,7 @@ export async function startStationsPage(options: PageOptions): Promise<void> {
     const readings = await loadStationReadings(
       {
         stations: [station],
-        range: rangeEndingAt(services.clock.now(), stationDetailWindowDays),
+        range: rangeEndingAtHour(services.clock.now(), stationDetailWindowDays),
       },
       { hydrologySource: services.hydrologySource, clock: services.clock },
       signal,
@@ -170,5 +171,9 @@ export async function startStationsPage(options: PageOptions): Promise<void> {
     }
   };
 
-  await runPage({ document, load, render, fallbackErrorMessage: translations.common.error });
+  const run = (): Promise<void> =>
+    runPage({ document, load, render, fallbackErrorMessage: translations.common.error });
+
+  await run();
+  startAutoRefresh({ document, refresh: run });
 }

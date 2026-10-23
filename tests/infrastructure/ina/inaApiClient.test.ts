@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { InaApiClient, InaApiError, inaBaseUrl } from "@/infrastructure/ina/inaApiClient";
+import { InaApiClient, InaApiError } from "@/infrastructure/ina/inaApiClient";
 import {
   FakeHttpPort,
   inaResponse,
@@ -8,7 +8,7 @@ import {
 } from "../../support/fakeHttpPort";
 
 describe("InaApiClient", () => {
-  it("envia un POST de formulario con el recurso, el formato y los parametros", async () => {
+  it("consulta el proxy con el recurso, el formato y los parametros", async () => {
     const http = new FakeHttpPort(inaResponse([{ sitecode: 34 }]));
     const client = new InaApiClient(http);
     const controller = new AbortController();
@@ -21,9 +21,9 @@ describe("InaApiClient", () => {
       throw new Error("No se registro la peticion al INA.");
     }
 
-    expect(request.url).toBe(inaBaseUrl);
-    expect(request.method).toBe("POST");
-    expect(request.headers).toEqual({ "content-type": "application/x-www-form-urlencoded" });
+    expect(request.url).toMatch(/^\/api\/ina\?/);
+    expect(request.method).toBe("GET");
+    expect(request.headers).toEqual({ accept: "application/json" });
 
     const parameters = requestParameters(request);
     expect(parameters.get("request")).toBe("datos");
@@ -32,13 +32,26 @@ describe("InaApiClient", () => {
     expect(http.signals[0]).toBe(controller.signal);
   });
 
-  it("permite apuntar a otra base", async () => {
+  it("permite el transporte directo y una base alternativa", async () => {
+    const http = new FakeHttpPort(inaResponse([]));
+    const client = new InaApiClient(http, {
+      baseUrl: "https://espejo.test/datos/",
+      transport: "direct",
+    });
+
+    await client.request("variables");
+
+    expect(http.requests[0]?.url).toBe("https://espejo.test/datos/");
+    expect(http.requests[0]?.method).toBe("POST");
+  });
+
+  it("acepta una base directa como segundo argumento", async () => {
     const http = new FakeHttpPort(inaResponse([]));
     const client = new InaApiClient(http, "https://espejo.test/datos/");
 
     await client.request("variables");
 
-    expect(http.requests[0]?.url).toBe("https://espejo.test/datos/");
+    expect(http.requests[0]?.method).toBe("POST");
   });
 
   it("descarta las filas que no son objetos", async () => {

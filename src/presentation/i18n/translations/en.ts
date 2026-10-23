@@ -344,7 +344,7 @@ export const enTranslations: TranslationSchema = {
       "Data published by the official agencies of the Argentine Republic is in the public domain. The source and the update date of every series are always cited.",
     updateTitle: "Update frequency",
     updateDescription:
-      "Data is queried when the page opens and whenever the date range changes. The browser calls INA and Open-Meteo directly; Prefectura water levels pass through a minimal proxy on this site to avoid origin restrictions. No historical series are stored on a server.",
+      "Data is queried when the page opens and refreshed automatically every hour while the tab stays visible. INA, Open-Meteo and Prefectura requests pass through proxies on this site with a shared edge cache: the first visit of each hour queries the source and later visits receive that same reading for the rest of the hour. No historical series are stored and missing data is never filled in.",
     disclaimerTitle: "Notice",
     disclaimer:
       "The information is reproduced as published by the official agencies and may lag behind the actual state of the river. In an emergency always follow the official notice of the competent authority.",

@@ -9,6 +9,7 @@
 import { loadWeather, type WeatherView } from "@/application/weather/loadWeather";
 import { getTranslations } from "../i18n";
 import { renderWeatherBlocks } from "../rendering/weather";
+import { startAutoRefresh } from "../runtime/autoRefresh";
 import { readPageLocale, resolvePageContext, runPage } from "../runtime/pageRuntime";
 import type { PageOptions } from "./pageOptions";
 
@@ -24,5 +25,9 @@ export async function startWeatherPage(options: PageOptions): Promise<void> {
     renderWeatherBlocks(document, view, locale, translations);
   };
 
-  await runPage({ document, load, render, fallbackErrorMessage: translations.common.error });
+  const run = (): Promise<void> =>
+    runPage({ document, load, render, fallbackErrorMessage: translations.common.error });
+
+  await run();
+  startAutoRefresh({ document, refresh: run });
 }

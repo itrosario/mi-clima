@@ -345,7 +345,7 @@ export const esTranslations = {
       "Los datos publicados por los organismos oficiales de la Republica Argentina son de dominio publico. Se citan siempre la fuente y la fecha de actualizacion de cada serie.",
     updateTitle: "Frecuencia de actualizacion",
     updateDescription:
-      "Los datos se consultan al abrir la pagina y al cambiar el rango de fechas. El navegador llama directamente al INA y a Open-Meteo; las alturas de Prefectura pasan por un proxy minimo del propio sitio para evitar las restricciones de origen. No se guardan series historicas en el servidor.",
+      "Los datos se consultan al abrir la pagina y se actualizan automaticamente cada hora mientras la pestana permanece visible. El INA, Open-Meteo y la Prefectura pasan por proxies del propio sitio con una cache de borde compartida: la primera visita de cada hora consulta la fuente y las siguientes reciben esa misma lectura durante la hora. No se guardan series historicas ni se completan datos faltantes.",
     disclaimerTitle: "Aviso",
     disclaimer:
       "La informacion se reproduce tal como la publican los organismos oficiales y puede tener rezagos respecto del estado real del rio. Ante una emergencia, segui siempre el aviso oficial de la autoridad competente.",

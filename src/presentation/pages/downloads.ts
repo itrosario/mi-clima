@@ -14,13 +14,14 @@ import {
 } from "@/application/dashboard/loadCorridorDashboard";
 import { buildExport, toSeriesExportInput } from "@/application/export/buildExport";
 import { hydrologyAttributions } from "@/application/shared/attributions";
-import { rangeEndingAt } from "@/application/shared/time";
+import { rangeEndingAtHour } from "@/application/shared/time";
 import type { StationReading } from "@/application/station/loadStationReadings";
 import type { ExportFormat } from "@/domain/export/types";
 import { exportFormats } from "@/domain/export/types";
 import type { DateRange } from "@/domain/telemetry/types";
 import { formatDate } from "../format/formatters";
 import { getTranslations, interpolate } from "../i18n";
+import { startAutoRefresh } from "../runtime/autoRefresh";
 import { createTextElement, queryElement, renderInto } from "../runtime/dom";
 import {
   readFormRange,
@@ -80,12 +81,12 @@ export async function startDownloadsPage(options: PageOptions): Promise<void> {
   const masterButton = queryElement<HTMLButtonElement>(document, "[data-export-master-button]");
 
   if (form !== null) {
-    writeFormRange(form, rangeEndingAt(services.clock.now(), defaultDashboardWindowDays));
+    writeFormRange(form, rangeEndingAtHour(services.clock.now(), defaultDashboardWindowDays));
   }
 
   const readRange = (): DateRange =>
     (form === null ? null : readFormRange(form)) ??
-    rangeEndingAt(services.clock.now(), defaultDashboardWindowDays);
+    rangeEndingAtHour(services.clock.now(), defaultDashboardWindowDays);
 
   const load = async (signal: AbortSignal): Promise<DownloadsData> => {
     const range = readRange();
@@ -215,4 +216,5 @@ export async function startDownloadsPage(options: PageOptions): Promise<void> {
   }
 
   await run();
+  startAutoRefresh({ document, refresh: run });
 }

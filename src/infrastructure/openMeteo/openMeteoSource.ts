@@ -11,6 +11,7 @@ import type { WeatherSnapshot } from "@/domain/weather/types";
 import { parseOpenMeteoSnapshot } from "./openMeteoPayload";
 
 export const openMeteoForecastUrl = "https://api.open-meteo.com/v1/forecast";
+export const openMeteoProxyUrl = "/api/clima";
 
 const currentVariables = [
   "temperature_2m",
@@ -65,7 +66,7 @@ export class OpenMeteoSource implements WeatherSource {
   private readonly http: HttpPort;
   private readonly baseUrl: string;
 
-  constructor(http: HttpPort, baseUrl: string = openMeteoForecastUrl) {
+  constructor(http: HttpPort, baseUrl: string = openMeteoProxyUrl) {
     this.http = http;
     this.baseUrl = baseUrl;
   }

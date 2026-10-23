@@ -31,24 +31,15 @@ test.beforeEach(async ({ page }) => {
 for (const locale of locales) {
   test.describe(`sitio en ${locale}`, () => {
     for (const section of sections) {
-      test(`${section.slug === "" ? "panel" : section.slug} carga sus datos`, async ({ page }) => {
+      const sectionName = section.slug === "" ? "panel" : section.slug;
+
+      test(`${sectionName} carga sus datos`, async ({ page }) => {
         await openSection(page, locale, section.slug);
         await expect(page.locator(section.waitFor).first()).toBeVisible();
         await expect(page.locator("[data-page-error]")).toBeHidden();
       });
-    }
 
-    test("navega entre todas las secciones", async ({ page }) => {
-      await openSection(page, locale, "");
-
-      for (const section of sections) {
-        const href = section.slug === "" ? `/${locale}/` : `/${locale}/${section.slug}/`;
-        await expect(page.locator(`.site-header__nav a[href="${href}"]`)).toHaveCount(1);
-      }
-    });
-
-    test("no tiene violaciones de accesibilidad WCAG 2.1 AA", async ({ page }) => {
-      for (const section of sections) {
+      test(`${sectionName} no tiene violaciones WCAG 2.1 AA`, async ({ page }) => {
         await openSection(page, locale, section.slug);
         await expect(page.locator(section.waitFor).first()).toBeVisible();
 
@@ -62,6 +53,15 @@ for (const locale of locales) {
             .map((violation) => `${violation.id} (${violation.nodes.length})`)
             .join(", ")}`,
         ).toEqual([]);
+      });
+    }
+
+    test("navega entre todas las secciones", async ({ page }) => {
+      await openSection(page, locale, "");
+
+      for (const section of sections) {
+        const href = section.slug === "" ? `/${locale}/` : `/${locale}/${section.slug}/`;
+        await expect(page.locator(`.site-header__nav a[href="${href}"]`)).toHaveCount(1);
       }
     });
   });

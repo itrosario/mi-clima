@@ -1,50 +1,60 @@
 # Mi Clima by IT Rosario
 
-Agregador de datos oficiales argentinos sobre clima, alerta de inundación y
-niveles hidrométricos de la Cuenca del Plata, publicado como sitio estático
-en `/es/` y `/en/`.
+Agregador de datos oficiales argentinos sobre clima, alertas de inundación y
+niveles hidrométricos de la Cuenca del Plata, publicado como sitio estático en
+`/es/` y `/en/`.
 
-El sitio **no tiene backend**: los datos se consultan directamente desde el
-navegador a los organismos oficiales (INA, INTA) y a Open-Meteo. No hay base
-de datos, ni tareas programadas, ni instantáneas versionadas en el repositorio.
+El sitio no tiene base de datos, tareas programadas ni instantáneas de datos
+versionadas: cada página consulta las fuentes al abrirse y vuelve a consultarlas
+cuando cambia el rango de fechas. El INA y Open-Meteo se llaman directamente
+desde el navegador; las alturas de la Prefectura Naval pasan por un Worker
+mínimo del propio dominio, porque su sitio no habilita CORS.
 
 ---
 
 ## Qué hace
 
-- **Panel** — estado actual del corredor del Paraná (Rosario, San Lorenzo,
-  Santa Fe, Paraná, Villa Constitución, Corrientes) con semáforo de inundación.
-- **Alertas** — semáforo por estación contra los umbrales oficiales de alerta
-  y evacuación, con mapa y distancia a cada umbral.
-- **Ríos** — catálogo navegable de ríos y estaciones hidrométricas de la
-  Cuenca del Plata.
-- **Clima** — condición actual y pronóstico; observados de redes oficiales y
-  pronóstico de Open-Meteo (única fuente no oficial, siempre etiquetada).
+- **Panel** — estado actual del corredor del Paraná (Corrientes, Paraná, Santa
+  Fe, San Lorenzo, Rosario y Villa Constitución) con semáforo de inundación,
+  comparación entre estaciones, gráfico y clima de Rosario.
+- **Alertas** — semáforo por estación contra los umbrales oficiales de alerta y
+  evacuación, mapa interactivo, distancia a cada umbral y panel separado con
+  las alturas publicadas por la Prefectura Naval.
+- **Ríos** — catálogo navegable de ríos, tramos y estaciones hidrométricas de la
+  Cuenca del Plata, con búsqueda en vivo.
+- **Estaciones** — catálogo completo y ficha de cada escala con los últimos 90
+  días, umbrales, red y enlaces a sus estadísticas.
+- **Clima** — condición actual y pronóstico de Open-Meteo, la única fuente no
+  oficial, siempre etiquetada como tal.
 - **Estadísticas** — anomalía contra percentiles históricos, tendencia y
-  velocidad de ascenso, máximos y días en alerta por año, media móvil y
-  variabilidad.
-- **Descargas** — exportación en CSV, JSON y texto plano, por estación o del
-  dataset completo.
-- **Fuentes** — metodología, trazabilidad y atribución de cada dato.
+  velocidad de ascenso, máximos y días en alerta por año, media móvil de 2, 7 o
+  30 días y comparación entre estaciones.
+- **Descargas** — CSV, JSON y texto plano generados en el navegador, por
+  estación o para el corredor completo.
+- **Fuentes** — metodología, trazabilidad, atribución y advertencias de cada
+  dato.
 
 ## Stack
 
-| Capa           | Tecnología                                               |
-| -------------- | -------------------------------------------------------- |
-| Sitio          | Astro 7 (salida estática)                                |
-| Interactividad | Preact en islas, hydrated solo donde hace falta          |
-| Gráficos       | ECharts 6                                                |
-| Mapa           | Leaflet 1.9 + OpenStreetMap                              |
-| Estilos        | CSS nativo con `@layer`, tokens de diseño y BEM          |
-| Tipografía     | Monaspace (autoalojada) + Source Serif 4                 |
-| Tests          | Vitest 5 + MSW 3 + Testing Library, Playwright, axe-core |
-| Calidad        | Biome (lint + format)                                    |
-| Deploy         | Cloudflare Workers (Static Assets) con Wrangler          |
+| Capa           | Tecnología                                                       |
+| -------------- | ---------------------------------------------------------------- |
+| Sitio          | Astro 7 (salida estática)                                        |
+| Interactividad | TypeScript sin framework; controladores DOM y HTML semántico     |
+| Gráficos       | ECharts 6, cargado por demanda                                   |
+| Mapa           | Leaflet 1.9 + OpenStreetMap, cargado por demanda                 |
+| Estilos        | CSS nativo con `@layer`, tokens de diseño y BEM                  |
+| Tipografía     | Monaspace (autoalojada) + Source Serif 4                         |
+| Tests          | Vitest 5 + happy-dom, Playwright y axe-core                      |
+| Calidad        | Biome (lint + format) e Impeccable                               |
+| Backend        | Worker mínimo para el proxy de Prefectura, sin estado            |
+| Deploy         | Cloudflare Workers (Static Assets) con Wrangler                  |
 
 TypeScript estricto de punta a punta (`strict`, `noUncheckedIndexedAccess`,
 `exactOptionalPropertyTypes`).
 
 ## Puesta en marcha
+
+Requiere Node.js ≥ 22.23.4 (la versión fijada en `.node-version` es 24.22.1).
 
 ```bash
 npm install
@@ -77,36 +87,51 @@ src/
 ├── domain/         Modelo puro: catálogo, telemetría, semáforo, clima,
 │                   analítica, exportación y puertos. Sin E/S ni DOM.
 ├── application/    Casos de uso: orquestan puertos y devuelven vistas.
-├── infrastructure/ Adaptadores: INA, Open-Meteo, cachés, descargas.
-└── presentation/   Astro, islas Preact, i18n, estilos.
+├── infrastructure/ Adaptadores: INA, Prefectura, Open-Meteo, cachés, descargas.
+├── presentation/   i18n, formateo, controladores de página, gráficos, mapa,
+│                   renderizado del DOM, componentes y estilos.
+└── worker/         Entrada del Worker y proxy de Prefectura con cache de borde.
 ```
 
 Reglas:
-- El dominio no importa nada de `application`, `infrastructure` ni
-  `presentation`.
+
+- El dominio no importa nada de `application`, `infrastructure`,
+  `presentation` ni `worker`.
 - La infraestructura implementa los puertos definidos en el dominio.
-- La presentación solo consume casos de uso; nunca habla con la red.
-- Todo acceso a datos externo pasa por un puerto, lo que permite simular la
-  red completa en los tests con MSW.
+- La presentación consume casos de uso; nunca habla con la red directamente.
+- Todo acceso externo pasa por un puerto, lo que permite simular la red
+  completa en los tests sin salir a internet.
+- El Worker solo expone `/api/prefectura` y `/api/prefectura/historico`.
 
-### Cobertura
+### Estrategia de pruebas
 
-El objetivo de cobertura es **100 %** en líneas, ramas, funciones y
-sentencias sobre todo el TypeScript de `src/`. Quedan fuera los archivos
-`.astro`, la configuración y las suites end-to-end.
+- Dominio, aplicación e infraestructura: Vitest en Node, con dobles en memoria
+  y payloads recortados de las fuentes reales.
+- Presentación: Vitest con happy-dom y controladores reales sobre el DOM.
+- End-to-end: Playwright contra el build de producción, con toda la red
+  interceptada y axe-core aplicado a cada sección en ambos idiomas.
+
+El objetivo de cobertura es **100 %** en líneas, ramas, funciones y sentencias
+sobre todo el TypeScript de `src/`. Quedan fuera los archivos `.astro`, la
+configuración y las suites end-to-end.
 
 ## Datos
 
-| Fuente     | Uso                                                       | Endpoint                       |
-| ---------- | --------------------------------------------------------- | ------------------------------ |
-| INA        | Estaciones, niveles, umbrales, percentiles                | `alerta.ina.gob.ar/pub/datos/` |
-| INTA       | Serie hidrométrica alternativa y variables agroclimáticas | vía INA                        |
-| Open-Meteo | Pronóstico y archive meteorológico                        | `api.open-meteo.com`           |
+| Fuente               | Uso                                                       | Endpoint                                  |
+| -------------------- | --------------------------------------------------------- | ----------------------------------------- |
+| INA                  | Estaciones, niveles, umbrales y percentiles               | `alerta.ina.gob.ar/pub/datos/`            |
+| INTA                 | Serie hidrométrica alternativa, visible vía INA           | `alerta.ina.gob.ar/pub/datos/`            |
+| Prefectura Naval     | Alturas de escala de los puertos del corredor             | `contenidosweb.prefecturanaval.gob.ar`    |
+| Open-Meteo           | Condición actual y pronóstico (fuente no oficial)         | `api.open-meteo.com`                      |
 
 El INA exige `POST` con cuerpo `application/x-www-form-urlencoded`; las
-consultas con `GET` devuelven cero filas. Todos los endpoints publican
-`Access-Control-Allow-Origin: *`, por eso el navegador puede consultarlos
-directamente.
+consultas con `GET` devuelven cero filas. El navegador lo consulta directamente
+porque publica CORS. La Prefectura no lo hace, así que el Worker descarga su
+tabla, la normaliza a JSON y la cachea en el borde durante pocos minutos.
+
+Las estaciones que aparecen tanto en el INA como en la Prefectura se muestran
+por separado: la Prefectura manda en el panel oficial de alturas y el INA sigue
+siendo la fuente del semáforo y de las series históricas.
 
 El detalle completo de cada recurso, de los umbrales y de las decisiones de
 normalización está en la página `/es/fuentes/`.
@@ -120,19 +145,25 @@ npm run build
 npx wrangler deploy
 ```
 
-`wrangler.jsonc` declara `assets.directory = "./dist"` y
-`assets.not_found_handling = "404-page"`. Cloudflare observa el repositorio y
-reconstruye en cada cambio. Los encabezados de seguridad y de cache viajan en
-`public/_headers`, sin necesidad de código de Worker.
+`wrangler.jsonc` declara `main = "src/worker/index.ts"`,
+`assets.directory = "./dist"` y `assets.not_found_handling = "404-page"`.
+Cloudflare observa el repositorio y reconstruye en cada cambio. Los encabezados
+de seguridad y de cache de los archivos estáticos viajan en `public/_headers`;
+el Worker agrega el cache de borde del proxy de Prefectura.
 
-## Accesibilidad
+## Accesibilidad y rendimiento
 
-Objetivo WCAG 2.1 AA. `axe-core` corre sobre cada página en los tests
-end-to-end y el sitio respeta navegación por teclado, foco visible, jerarquía
-de encabezados, contraste y `prefers-reduced-motion`.
+Objetivo WCAG 2.1 AA. `axe-core` corre sobre las dieciséis vistas (ocho
+secciones por idioma) en los tests end-to-end. El sitio respeta navegación por
+teclado, foco visible, jerarquía de encabezados, contraste y
+`prefers-reduced-motion`.
+
+ECharts y Leaflet se importan dinámicamente solo en las páginas que los usan.
+El contenido se renderiza en el servidor como HTML estático y los controladores
+del navegador completan los datos sin hidratar componentes.
 
 ## Licencia
 
 [MIT](LICENSE) para el código. Los datos publicados por los organismos
-oficiales de la República Argentina son de dominio público y se reproducen
-con fines informativos, citando siempre su fuente.
+oficiales de la República Argentina son de dominio público y se reproducen con
+fines informativos, citando siempre su fuente.

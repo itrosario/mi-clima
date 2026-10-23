@@ -6,7 +6,7 @@ y estilo de commits.
 
 ## Requisitos
 
-- Node.js ≥ 22.18
+- Node.js ≥ 22.23.4
 - npm ≥ 10
 - Git
 
@@ -32,8 +32,11 @@ npm run e2e      # end-to-end y accesibilidad
 - **Clean Architecture**: las dependencias apuntan hacia dentro.
   - `domain/` no importa de otras capas y no conoce el DOM ni la red.
   - `application/` coordina casos de uso usando los puertos del dominio.
-  - `infrastructure/` implementa los puertos (INA, Open-Meteo, cachés).
-  - `presentation/` son islas Preact, layouts Astro y estilos.
+  - `infrastructure/` implementa los puertos (INA, Prefectura, Open-Meteo,
+    cachés y descargas).
+  - `presentation/` son controladores DOM, renderizado, formateo, i18n, gráficos,
+    mapa, componentes y layouts Astro.
+  - `worker/` solo expone el proxy de Prefectura; no contiene reglas de dominio.
 - **Responsabilidad única**: un archivo, un módulo, una razón para cambiar.
 - **Nombres descriptivos**: los identificadores van en inglés; el glosario de
   dominio está documentado en castellano.
@@ -48,11 +51,12 @@ npm run e2e      # end-to-end y accesibilidad
 La cobertura del 100 % sobre todo el TypeScript de `src/` no es negociable.
 
 - **Dominio y aplicación**: tests unitarios con Vitest, sin red.
-- **Infraestructura**: MSW simula el INA y Open-Meteo; ningún test real sale a
-  internet.
-- **Presentación**: Testing Library sobre las islas Preact.
-- **End-to-end**: Playwright con fixtures versionados y red completamente
-  simulada; cada página se valida con axe-core contra WCAG 2.1 AA.
+- **Infraestructura**: dobles de los puertos y payloads recortados de las
+  fuentes reales; ningún test sale a internet.
+- **Presentación**: Vitest con happy-dom y controladores reales sobre el DOM.
+- **End-to-end**: Playwright con el build de producción, red completamente
+  simulada; cada sección y cada idioma se validan con axe-core contra WCAG 2.1
+  AA.
 
 Al escribir código nuevo:
 
@@ -109,6 +113,8 @@ Reglas prácticas:
 - El sitio reproduce datos oficiales. Cualquier fuente nueva debe documentarse
   en `/es/fuentes/` con su endpoint, su frecuencia de actualización y su
   licencia.
+- Si la fuente no publica CORS, se agrega una ruta al Worker y se documenta el
+  cache de borde; el navegador nunca consulta un origen sin CORS.
 - No se agregan instantáneas de datos al repositorio: todo se consulta en
   tiempo de ejecución.
 - Los datos oficiales son de dominio público; Open-Meteo y las fuentes de

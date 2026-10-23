@@ -522,3 +522,366 @@
   color: var(--color-text-muted);
   max-width: var(--measure-prose);
 }
+
+/* --- Secciones de pagina --- */
+.page-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+  padding-block-end: var(--space-10);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.section__title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-lg);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.section__subtitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.section__lead {
+  max-width: var(--measure-prose);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.page-meta,
+.status-note,
+.source-note {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.source-note {
+  font-style: italic;
+}
+
+.page-status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* --- Controles --- */
+.range-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: var(--border-width-thin) solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-raised);
+}
+
+.control-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+}
+
+.control-row .field {
+  min-width: min(18rem, 100%);
+}
+
+.field--search {
+  max-width: 32rem;
+}
+
+/* --- Grillas --- */
+.stat-grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+}
+
+.station-grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+}
+
+.source-grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+}
+
+/* --- Leyenda del semaforo --- */
+.status-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.status-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+.status-legend__item::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-pill);
+  background-color: currentcolor;
+}
+
+.status-legend__item--low {
+  background-color: var(--color-water-low-soft);
+  color: var(--color-water-low-text);
+}
+
+.status-legend__item--normal {
+  background-color: var(--color-water-normal-soft);
+  color: var(--color-water-normal-text);
+}
+
+.status-legend__item--alert {
+  background-color: var(--color-water-alert-soft);
+  color: var(--color-water-alert-text);
+}
+
+.status-legend__item--evacuation {
+  background-color: var(--color-water-evacuation-soft);
+  color: var(--color-water-evacuation-text);
+}
+
+.status-legend__item--undefined {
+  background-color: var(--color-water-undefined-soft);
+  color: var(--color-water-undefined-text);
+}
+
+/* --- Tarjeta de estacion --- */
+.station-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: var(--border-width-thin) solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-raised);
+}
+
+.station-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.station-card__name {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+}
+
+.station-card__meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.station-card__metrics {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+}
+
+.station-card__metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.station-card__metric-label {
+  font-size: var(--font-size-2xs);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.station-card__metric-value {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.station-card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block-start: var(--space-3);
+  border-block-start: var(--border-width-thin) solid var(--color-border-subtle);
+}
+
+.station-card__updated {
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-muted);
+}
+
+.station-card__link,
+.back-link {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* --- Rios --- */
+.river-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.river-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: var(--border-width-thin) solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-raised);
+}
+
+.river-group__title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-md);
+}
+
+.river-group__reach {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.river-group__reach-title {
+  font-size: var(--font-size-2xs);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.river-group__stations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.river-group__stations a {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  border: var(--border-width-thin) solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.river-group__stations a:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent-text);
+}
+
+/* --- Tablas y listas de definicion --- */
+.data-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: var(--border-width-thin) solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-raised);
+}
+
+.definition-list {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(8rem, auto) 1fr;
+}
+
+.definition-list__term {
+  font-size: var(--font-size-2xs);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.definition-list__description {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Estados vacios y globos del mapa --- */
+.empty-state {
+  padding: var(--space-5);
+  border: var(--border-width-thin) dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.map-popup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 12rem;
+}
+
+.map-popup__title {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+}
+
+.map-popup__detail {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.map-popup__link {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 48rem) {
+  .site-header__inner {
+    flex-wrap: wrap;
+  }
+
+  .site-header__nav {
+    order: 3;
+    width: 100%;
+    margin-inline-start: 0;
+  }
+
+  .site-header__actions {
+    margin-inline-start: auto;
+  }
+
+  .definition-list {
+    grid-template-columns: 1fr;
+  }
+}

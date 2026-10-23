@@ -1,0 +1,79 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../presentation/components/shared/PageHeader.astro";
+import PageStatus from "../../presentation/components/shared/PageStatus.astro";
+import RangeForm from "../../presentation/components/shared/RangeForm.astro";
+import { getTranslations } from "../../presentation/i18n";
+
+const locale = "es" as const;
+const translations = getTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  currentSection="/descargas/"
+  title={translations.downloads.title}
+  description={translations.downloads.lead}
+>
+  <div class="u-container page-section">
+    <PageHeader
+      eyebrow={translations.nav.downloads}
+      title={translations.downloads.title}
+      lead={translations.downloads.lead}
+    />
+
+    <RangeForm translations={translations} />
+    <p class="page-meta" data-export-summary></p>
+
+    <section class="section" aria-labelledby="downloads-station-title">
+      <h2 id="downloads-station-title" class="section__title">
+        {translations.downloads.stationTitle}
+      </h2>
+      <p class="section__lead">{translations.downloads.stationLead}</p>
+
+      <div class="control-row">
+        <div class="field">
+          <label class="field__label" for="downloads-station">
+            {translations.downloads.stationLabel}
+          </label>
+          <select class="field__control" id="downloads-station" data-export-station></select>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="downloads-format">
+            {translations.downloads.format}
+          </label>
+          <select class="field__control" id="downloads-format" data-export-format>
+            <option value="csv">{translations.downloads.csv}</option>
+            <option value="json">{translations.downloads.json}</option>
+            <option value="txt">{translations.downloads.txt}</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="button button--primary" type="button" data-export-station-button>
+        {translations.downloads.generate}
+      </button>
+    </section>
+
+    <section class="section" aria-labelledby="downloads-master-title">
+      <h2 id="downloads-master-title" class="section__title">
+        {translations.downloads.masterTitle}
+      </h2>
+      <p class="section__lead">{translations.downloads.masterLead}</p>
+      <button class="button" type="button" data-export-master-button>
+        {translations.downloads.generate}
+      </button>
+    </section>
+
+    <p class="status-note" data-export-status></p>
+
+    <PageStatus translations={translations} />
+  </div>
+</BaseLayout>
+
+<script>
+  import { startDownloadsPage } from "@/presentation/pages/downloads";
+
+  void startDownloadsPage({});
+</script>

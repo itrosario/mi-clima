@@ -1,0 +1,101 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../presentation/components/shared/PageHeader.astro";
+import PageStatus from "../../presentation/components/shared/PageStatus.astro";
+import { getTranslations } from "../../presentation/i18n";
+
+const locale = "en" as const;
+const translations = getTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  currentSection="/estadisticas/"
+  title={translations.statistics.title}
+  description={translations.statistics.lead}
+>
+  <div class="u-container page-section">
+    <PageHeader
+      eyebrow={translations.nav.statistics}
+      title={translations.statistics.title}
+      lead={translations.statistics.lead}
+    />
+
+    <div class="control-row">
+      <div class="field">
+        <label class="field__label" for="statistics-station">
+          {translations.statistics.selectStation}
+        </label>
+        <select class="field__control" id="statistics-station" data-station-select></select>
+        <span class="field__hint">{translations.statistics.selectStationHint}</span>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="statistics-window">
+          {translations.statistics.movingAverageWindow}
+        </label>
+        <select class="field__control" id="statistics-window" data-moving-window>
+          <option value="2">2</option>
+          <option value="7">7</option>
+          <option value="30">30</option>
+        </select>
+      </div>
+    </div>
+
+    <p class="page-meta" data-statistics-meta></p>
+    <p class="source-note">{translations.statistics.percentileWarning}</p>
+
+    <section class="section" aria-labelledby="statistics-anomaly-title">
+      <h2 id="statistics-anomaly-title" class="section__title">
+        {translations.statistics.anomalyTitle}
+      </h2>
+      <p class="section__lead">{translations.statistics.anomalyDescription}</p>
+      <div class="stat-grid" data-statistics-anomaly></div>
+    </section>
+
+    <section class="section" aria-labelledby="statistics-trend-title">
+      <h2 id="statistics-trend-title" class="section__title">
+        {translations.statistics.trendTitle}
+      </h2>
+      <p class="section__lead">{translations.statistics.trendDescription}</p>
+      <div class="stat-grid" data-statistics-trend></div>
+    </section>
+
+    <section class="section" aria-labelledby="statistics-chart-title">
+      <h2 id="statistics-chart-title" class="section__title">
+        {translations.statistics.variabilityTitle}
+      </h2>
+      <p class="section__lead">{translations.statistics.variabilityDescription}</p>
+      <div class="chart-frame" data-statistics-chart></div>
+    </section>
+
+    <section class="section" aria-labelledby="statistics-extremes-title">
+      <h2 id="statistics-extremes-title" class="section__title">
+        {translations.statistics.extremesTitle}
+      </h2>
+      <p class="section__lead">{translations.statistics.extremesDescription}</p>
+      <div data-statistics-extremes></div>
+    </section>
+
+    <section class="section" aria-labelledby="statistics-comparison-title">
+      <h2 id="statistics-comparison-title" class="section__title">
+        {translations.statistics.comparisonTitle}
+      </h2>
+      <p class="section__lead">{translations.statistics.comparisonDescription}</p>
+      <div data-statistics-comparison></div>
+    </section>
+
+    <PageStatus translations={translations} />
+  </div>
+</BaseLayout>
+
+<script>
+  import { createChartRenderer } from "@/presentation/charts/chartRenderer";
+  import { loadEChartsModule } from "@/presentation/charts/echartsLoader";
+  import { startStatisticsPage } from "@/presentation/pages/statistics";
+
+  void startStatisticsPage({
+    chartFactory: async (container) =>
+      createChartRenderer(container, await loadEChartsModule()),
+  });
+</script>

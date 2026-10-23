@@ -1,0 +1,79 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../presentation/components/shared/PageHeader.astro";
+import PageStatus from "../../presentation/components/shared/PageStatus.astro";
+import RangeForm from "../../presentation/components/shared/RangeForm.astro";
+import { getTranslations } from "../../presentation/i18n";
+
+const locale = "es" as const;
+const translations = getTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  currentSection="/alertas/"
+  title={translations.alerts.title}
+  description={translations.alerts.lead}
+>
+  <Fragment slot="banner">
+    <div class="emergency-banner" data-emergency-banner hidden>
+      <span class="emergency-banner__label">{translations.floodStatus.evacuation}</span>
+      <p class="emergency-banner__detail" data-emergency-message></p>
+      <a class="emergency-banner__link" href={`/${locale}/alertas/`}>
+        {translations.nav.alerts}
+      </a>
+    </div>
+  </Fragment>
+
+  <div class="u-container page-section">
+    <PageHeader
+      eyebrow={translations.dashboard.officialSource}
+      title={translations.alerts.title}
+      lead={translations.alerts.lead}
+    />
+
+    <RangeForm translations={translations} />
+
+    <section class="section" aria-labelledby="alerts-summary-title">
+      <h2 id="alerts-summary-title" class="section__title">
+        {translations.alerts.summaryTitle}
+      </h2>
+      <div class="stat-grid" data-summary-tiles></div>
+    </section>
+
+    <section class="section" aria-labelledby="alerts-map-title">
+      <h2 id="alerts-map-title" class="section__title">{translations.alerts.mapTitle}</h2>
+      <p class="section__lead">{translations.alerts.mapDescription}</p>
+      <div class="map-frame" data-station-map></div>
+    </section>
+
+    <section class="section" aria-labelledby="alerts-list-title">
+      <h2 id="alerts-list-title" class="section__title">{translations.alerts.listTitle}</h2>
+      <h3 class="section__subtitle">{translations.alerts.legendTitle}</h3>
+      <ul class="status-legend" data-status-legend></ul>
+      <div class="station-grid" data-alert-cards></div>
+    </section>
+
+    <section class="section" aria-labelledby="alerts-prefectura-title">
+      <h2 id="alerts-prefectura-title" class="section__title">
+        {translations.alerts.prefecturaTitle}
+      </h2>
+      <p class="section__lead">{translations.alerts.prefecturaLead}</p>
+      <div data-prefectura-table></div>
+      <p class="source-note">{translations.alerts.prefecturaNote}</p>
+    </section>
+
+    <PageStatus translations={translations} />
+  </div>
+</BaseLayout>
+
+<script>
+  import { createStationMap } from "@/presentation/map/stationMap";
+  import { loadLeafletModule } from "@/presentation/map/leafletLoader";
+  import { startAlertsPage } from "@/presentation/pages/alerts";
+
+  void startAlertsPage({
+    mapFactory: async (container, markers) =>
+      createStationMap(container, await loadLeafletModule(), markers),
+  });
+</script>

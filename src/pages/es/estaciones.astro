@@ -1,0 +1,55 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../presentation/components/shared/PageHeader.astro";
+import PageStatus from "../../presentation/components/shared/PageStatus.astro";
+import { getTranslations } from "../../presentation/i18n";
+
+const locale = "es" as const;
+const translations = getTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  currentSection="/estaciones/"
+  title={translations.stations.title}
+  description={translations.stations.lead}
+>
+  <div class="u-container page-section">
+    <PageHeader
+      eyebrow={translations.nav.stations}
+      title={translations.stations.title}
+      lead={translations.stations.lead}
+    />
+
+    <section class="section" aria-labelledby="stations-legend-title">
+      <h2 id="stations-legend-title" class="section__title">
+        {translations.alerts.legendTitle}
+      </h2>
+      <ul class="status-legend" data-status-legend></ul>
+    </section>
+
+    <section class="section" data-station-detail></section>
+
+    <div class="chart-frame" data-station-chart></div>
+
+    <section class="section" aria-labelledby="stations-catalogue-title">
+      <h2 id="stations-catalogue-title" class="section__title">
+        {translations.stations.catalogueTitle}
+      </h2>
+      <div data-station-catalogue></div>
+    </section>
+
+    <PageStatus translations={translations} />
+  </div>
+</BaseLayout>
+
+<script>
+  import { createChartRenderer } from "@/presentation/charts/chartRenderer";
+  import { loadEChartsModule } from "@/presentation/charts/echartsLoader";
+  import { startStationsPage } from "@/presentation/pages/stations";
+
+  void startStationsPage({
+    chartFactory: async (container) =>
+      createChartRenderer(container, await loadEChartsModule()),
+  });
+</script>

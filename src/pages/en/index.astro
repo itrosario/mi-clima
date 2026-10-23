@@ -1,5 +1,8 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../presentation/components/shared/PageHeader.astro";
+import PageStatus from "../../presentation/components/shared/PageStatus.astro";
+import RangeForm from "../../presentation/components/shared/RangeForm.astro";
 import { getTranslations } from "../../presentation/i18n";
 
 const locale = "en" as const;
@@ -12,11 +15,76 @@ const translations = getTranslations(locale);
   title={translations.dashboard.title}
   description={translations.site.description}
 >
-  <div class="u-container">
-    <section class="page-header">
-      <p class="page-header__eyebrow">{translations.site.fullTitle}</p>
-      <h1>{translations.dashboard.title}</h1>
-      <p class="page-header__lead">{translations.dashboard.lead}</p>
+  <Fragment slot="banner">
+    <div class="emergency-banner" data-emergency-banner hidden>
+      <span class="emergency-banner__label">{translations.floodStatus.evacuation}</span>
+      <p class="emergency-banner__detail" data-emergency-message></p>
+      <a class="emergency-banner__link" href={`/${locale}/alertas/`}>
+        {translations.nav.alerts}
+      </a>
+    </div>
+  </Fragment>
+
+  <div class="u-container page-section">
+    <PageHeader
+      eyebrow={translations.dashboard.corridorTitle}
+      title={translations.dashboard.title}
+      lead={translations.dashboard.lead}
+    />
+
+    <RangeForm translations={translations} />
+    <p class="page-meta" data-range-summary></p>
+
+    <section class="section" aria-labelledby="dashboard-summary-title">
+      <h2 id="dashboard-summary-title" class="section__title">
+        {translations.dashboard.summaryTitle}
+      </h2>
+      <div class="stat-grid" data-summary-tiles></div>
     </section>
+
+    <section class="section" aria-labelledby="dashboard-alerts-title">
+      <h2 id="dashboard-alerts-title" class="section__title">
+        {translations.dashboard.alertsTitle}
+      </h2>
+      <ul class="status-legend" data-status-legend></ul>
+      <div class="station-grid" data-corridor-cards></div>
+    </section>
+
+    <section class="section" aria-labelledby="dashboard-chart-title">
+      <h2 id="dashboard-chart-title" class="section__title">
+        {translations.dashboard.chartTitle}
+      </h2>
+      <div class="chart-frame" data-corridor-chart></div>
+    </section>
+
+    <section class="section" aria-labelledby="dashboard-climate-title">
+      <h2 id="dashboard-climate-title" class="section__title">
+        {translations.dashboard.climateTitle}
+      </h2>
+      <div class="stat-grid" data-weather-current></div>
+      <div data-weather-forecast></div>
+      <p class="source-note" data-weather-source></p>
+    </section>
+
+    <section class="section" aria-labelledby="dashboard-comparison-title">
+      <h2 id="dashboard-comparison-title" class="section__title">
+        {translations.dashboard.comparisonTitle}
+      </h2>
+      <p class="section__lead">{translations.dashboard.comparisonDescription}</p>
+      <div data-comparison-table></div>
+    </section>
+
+    <PageStatus translations={translations} />
   </div>
 </BaseLayout>
+
+<script>
+  import { createChartRenderer } from "@/presentation/charts/chartRenderer";
+  import { loadEChartsModule } from "@/presentation/charts/echartsLoader";
+  import { startDashboardPage } from "@/presentation/pages/dashboard";
+
+  void startDashboardPage({
+    chartFactory: async (container) =>
+      createChartRenderer(container, await loadEChartsModule()),
+  });
+</script>

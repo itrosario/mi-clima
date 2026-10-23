@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../presentation/components/shared/PageHeader.astro";
+import PageStatus from "../../presentation/components/shared/PageStatus.astro";
+import { getTranslations } from "../../presentation/i18n";
+
+const locale = "en" as const;
+const translations = getTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  currentSection="/rios/"
+  title={translations.rivers.title}
+  description={translations.rivers.lead}
+>
+  <div class="u-container page-section">
+    <PageHeader
+      eyebrow={translations.nav.rivers}
+      title={translations.rivers.title}
+      lead={translations.rivers.lead}
+    />
+
+    <div class="field field--search">
+      <label class="field__label" for="river-search">{translations.rivers.filterLabel}</label>
+      <input
+        class="field__control"
+        id="river-search"
+        type="search"
+        placeholder={translations.rivers.searchPlaceholder}
+        data-river-search
+      />
+    </div>
+
+    <p class="page-meta" data-river-count></p>
+    <div class="river-list" data-river-list></div>
+
+    <PageStatus translations={translations} />
+  </div>
+</BaseLayout>
+
+<script>
+  import { startRiversPage } from "@/presentation/pages/rivers";
+
+  void startRiversPage({});
+</script>

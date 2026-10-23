@@ -1,0 +1,100 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../presentation/components/shared/PageHeader.astro";
+import { getTranslations } from "../../presentation/i18n";
+
+const locale = "en" as const;
+const translations = getTranslations(locale);
+
+const sources = [
+  {
+    title: translations.sources.inaTitle,
+    description: translations.sources.inaDescription,
+    href: "https://alerta.ina.gob.ar/",
+    label: "alerta.ina.gob.ar",
+  },
+  {
+    title: translations.sources.intaTitle,
+    description: translations.sources.intaDescription,
+    href: "https://www.argentina.gob.ar/inta",
+    label: "argentina.gob.ar/inta",
+  },
+  {
+    title: translations.sources.prefecturaTitle,
+    description: translations.sources.prefecturaDescription,
+    href: "https://contenidosweb.prefecturanaval.gob.ar/alturas/",
+    label: "prefecturanaval.gob.ar",
+  },
+  {
+    title: translations.sources.smnTitle,
+    description: translations.sources.smnDescription,
+    href: "https://www.smn.gob.ar/",
+    label: "smn.gob.ar",
+  },
+  {
+    title: translations.sources.openMeteoTitle,
+    description: translations.sources.openMeteoDescription,
+    href: "https://open-meteo.com/",
+    label: "open-meteo.com",
+  },
+] as const;
+---
+
+<BaseLayout
+  locale={locale}
+  currentSection="/fuentes/"
+  title={translations.sources.title}
+  description={translations.sources.lead}
+>
+  <div class="u-container page-section">
+    <PageHeader
+      eyebrow={translations.nav.sources}
+      title={translations.sources.title}
+      lead={translations.sources.lead}
+    />
+
+    <div class="source-grid">
+      {
+        sources.map((source) => (
+          <article class="card">
+            <h2 class="card__title">{source.title}</h2>
+            <p class="prose">{source.description}</p>
+            <a class="card__meta" href={source.href} rel="noopener noreferrer" target="_blank">
+              {source.label}
+            </a>
+          </article>
+        ))
+      }
+    </div>
+
+    <section class="section" aria-labelledby="sources-methodology-title">
+      <h2 id="sources-methodology-title" class="section__title">
+        {translations.sources.methodologyTitle}
+      </h2>
+      <p class="prose">
+        {translations.statistics.anomalyDescription}
+      </p>
+      <p class="prose">
+        {translations.statistics.trendDescription}
+      </p>
+      <p class="prose">
+        {translations.statistics.extremesDescription}
+      </p>
+    </section>
+
+    <section class="section" aria-labelledby="sources-update-title">
+      <h2 id="sources-update-title" class="section__title">
+        {translations.sources.updateTitle}
+      </h2>
+      <p class="prose">{translations.sources.updateDescription}</p>
+    </section>
+
+    <section class="section" aria-labelledby="sources-attribution-title">
+      <h2 id="sources-attribution-title" class="section__title">
+        {translations.sources.attributionTitle}
+      </h2>
+      <p class="prose">{translations.sources.attribution}</p>
+      <p class="prose">{translations.sources.disclaimer}</p>
+    </section>
+  </div>
+</BaseLayout>

@@ -1,0 +1,47 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../presentation/components/shared/PageHeader.astro";
+import PageStatus from "../../presentation/components/shared/PageStatus.astro";
+import { getTranslations } from "../../presentation/i18n";
+
+const locale = "en" as const;
+const translations = getTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  currentSection="/clima/"
+  title={translations.weather.title}
+  description={translations.weather.lead}
+>
+  <div class="u-container page-section">
+    <PageHeader
+      eyebrow={translations.dashboard.unofficialSource}
+      title={translations.weather.title}
+      lead={translations.weather.lead}
+    />
+
+    <section class="section" aria-labelledby="weather-current-title">
+      <h2 id="weather-current-title" class="section__title">
+        {translations.weather.currentTitle}
+      </h2>
+      <div class="stat-grid" data-weather-current></div>
+    </section>
+
+    <section class="section" aria-labelledby="weather-forecast-title">
+      <h2 id="weather-forecast-title" class="section__title">
+        {translations.weather.forecastTitle}
+      </h2>
+      <div data-weather-forecast></div>
+      <p class="source-note" data-weather-source></p>
+    </section>
+
+    <PageStatus translations={translations} />
+  </div>
+</BaseLayout>
+
+<script>
+  import { startWeatherPage } from "@/presentation/pages/weather";
+
+  void startWeatherPage({});
+</script>

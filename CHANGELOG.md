@@ -31,6 +31,25 @@ el proyecto sigue [Semantic Versioning](https://semver.org/lang/es/).
   tablas, con soporte para áreas seguras y rotación de pantalla.
 - Enlace al repositorio de GitHub en el pie, la página de fuentes y el README,
   para descargar el código o proponer cambios.
+- Avisos Web Push públicos y sin cuentas. Suscripción por dispositivo desde
+  `/es/alertas/` y `/en/alertas/`. La geolocalización se usa solo en el
+  navegador para elegir la estación más cercana (hasta 300 km); no se envían
+  coordenadas al servidor. Se puede elegir una estación manualmente.
+- Monitor de crecidas con Cron Trigger de Cloudflare cada 15 minutos. Se avisa
+  al entrar en alerta o evacuación, al salir a estado inferior (`clear`) y en
+  subidas marcadas (≥ 0,30 m en 6 h o ≥ 0,50 m en 24 h) con enfriamiento de
+  12 horas por estación. La primera ejecución solo toma una fotografía del
+  estado. Los avisos derivan de umbrales oficiales del INA y no son un boletín
+  oficial de emergencia.
+- API de avisos `/api/alertas/vapid`, `/api/alertas/suscripcion` y
+  `/api/alertas/baja` con validación, lista de hosts push permitidos, TTL de
+  un año, renovación al reactivar y baja automática ante respuestas `404/410`.
+  Las claves VAPID pueden configurarse por entorno o generarse y guardarse en
+  KV (`ALERTS`), autoprovisionado por Cloudflare.
+- Service worker con manejo `push` y `notificationclick` (abre `/es/alertas/` o
+  `/en/alertas/` según el aviso). Requiere PWA instalada en iOS/iPadOS 16.4+.
+- `AGENTS.md` con reglas obligatorias del proyecto y skill local
+  `.opencode/skills/design-review/SKILL.md` para revisión con `impeccable`.
 
 ### Cambiado
 
@@ -78,18 +97,3 @@ el proyecto sigue [Semantic Versioning](https://semver.org/lang/es/).
   comparación entre estaciones.
 - Descargas en CSV, JSON y texto plano generadas en el navegador, por estación
   y del dataset maestro del corredor.
-- Worker de Cloudflare que expone `/api/prefectura` y
-  `/api/prefectura/historico`, normaliza la tabla de la Prefectura y cachea en
-  el borde.
-- Encabezados de seguridad y cache mediante `public/_headers`, con CSP que
-  habilita solo las fuentes y los mosaicos de OpenStreetMap necesarios.
-- Suite de tests con Vitest, happy-dom, Playwright y axe-core, con cobertura
-  del 100 % sobre todo el TypeScript de `src/`.
-- Tests end-to-end con red completamente simulada para las ocho secciones en
-  ambos idiomas, incluidos flujos de descarga, filtros y accesibilidad.
-- Integración continua con Biome, Impeccable, chequeo de tipos, cobertura,
-  build, end-to-end y publicación del reporte de Playwright.
-- Documentación del proyecto: README, CHANGELOG, CONTRIBUTING y licencia MIT.
-
-[No publicado]: https://github.com/itrosario/mi-clima/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/itrosario/mi-clima/releases/tag/v0.1.0

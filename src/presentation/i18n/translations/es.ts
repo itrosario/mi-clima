@@ -170,6 +170,31 @@ export const esTranslations = {
     prefecturaEmpty: "No se pudieron obtener las alturas de Prefectura en este momento.",
     prefecturaNoMatch: "La Prefectura no publica alturas para las estaciones del corredor.",
     prefecturaNote: "Fuente oficial consultada a traves del proxy del sitio.",
+    push: {
+      title: "Avisos de inundacion",
+      lead: "Recibi un aviso en este dispositivo cuando una estacion de tu zona entre en alerta o evacuacion.",
+      zoneLabel: "Tu zona",
+      zonePlaceholder: "Elegi una estacion",
+      locate: "Usar mi ubicacion",
+      activate: "Activar avisos",
+      active: "Avisos activos para {station}.",
+      activeGeneric: "Avisos activos en este dispositivo.",
+      deactivate: "Desactivar avisos",
+      inactive: "Los avisos estan desactivados en este dispositivo.",
+      unsupported:
+        "Este navegador no permite avisos push. En iPhone o iPad, instala la app primero.",
+      locating: "Buscando tu zona...",
+      detected: "Zona detectada: {station}.",
+      outside: "No estas cerca del corredor cubierto. Elegi una estacion de la lista.",
+      geolocationError: "No pudimos obtener tu ubicacion. Elegi una estacion de la lista.",
+      permissionDenied:
+        "El navegador bloqueo las notificaciones. Habilitalas en la configuracion del sitio.",
+      activating: "Activando avisos...",
+      deactivating: "Desactivando avisos...",
+      activationError: "No se pudieron activar los avisos. Intenta de nuevo.",
+      deactivationError: "No se pudieron desactivar los avisos. Intenta de nuevo.",
+      note: "Los avisos se calculan con los umbrales oficiales del INA y no reemplazan un boletin oficial de emergencia. La ubicacion se usa solo en tu navegador para elegir la estacion.",
+    },
   },
   rivers: {
     title: "Rios",
@@ -361,8 +386,8 @@ export const esTranslations = {
   },
 } as const;
 
-export type TranslationSchema = {
-  [Section in keyof typeof esTranslations]: {
-    [Key in keyof (typeof esTranslations)[Section]]: string;
-  };
+type TranslationValue<T> = {
+  [Key in keyof T]: T[Key] extends string ? string : TranslationValue<T[Key]>;
 };
+
+export type TranslationSchema = TranslationValue<typeof esTranslations>;

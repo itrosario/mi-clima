@@ -7,18 +7,24 @@ niveles hidrométricos de la Cuenca del Plata, publicado como sitio estático en
 **Un proyecto de Juan Martín Villanueva para IT Rosario**, de uso público y
 gratuito. El sitio recopila y ordena datos oficiales; no agrega, rellena ni
 inventa lecturas. Cuando una fuente no publica un dato, la interfaz lo muestra
-como faltante.
+como faltante. Los avisos Web Push son opcionales, sin cuentas, sin envío de
+coordenadas al servidor y basados en umbrales oficiales del INA; no son un
+boletín oficial de emergencia. Las suscripciones solo guardan endpoint, claves de
+cifrado y estaciones elegidas. En iOS/iPadOS 16.4+ se requiere la app instalada.
 
 Código fuente, incidencias y propuestas:
 [github.com/itrosario/mi-clima](https://github.com/itrosario/mi-clima).
 
-El sitio no tiene base de datos ni instantáneas de datos versionadas. Cada
-página consulta las fuentes al abrirse, se actualiza sola cada hora mientras la
-pestaña sigue visible y vuelve a consultar cuando cambia el rango de fechas. El
-INA, Open-Meteo y la Prefectura Naval pasan por proxies del Worker con una caché
-de borde compartida: la primera visita de cada hora consulta la fuente y las
-siguientes reciben esa misma lectura durante la hora. No hay tareas programadas
-ni se guardan series históricas en el servidor.
+El sitio no guarda instantáneas de datos versionadas. Cada página consulta las
+fuentes al abrirse, se actualiza sola cada hora mientras la pestaña sigue visible
+y vuelve a consultar cuando cambia el rango de fechas. El INA, Open-Meteo y la
+Prefectura Naval pasan por proxies del Worker con una caché de borde compartida:
+la primera visita de cada hora consulta la fuente y las siguientes reciben esa
+misma lectura durante la hora. Las suscripciones a avisos Web Push se guardan
+en KV (binding `ALERTS`) con los datos mínimos necesarios (endpoint, claves de
+cifrado y estaciones elegidas); no se guardan coordenadas ni identificadores
+personales. Un Cron Trigger de Cloudflare ejecuta el monitor cada 15 minutos
+para revisar las estaciones. No se guardan series históricas en el servidor.
 
 ---
 
@@ -30,7 +36,11 @@ ni se guardan series históricas en el servidor.
   el promedio de cada estación, y clima de Rosario.
 - **Alertas** — semáforo por estación contra los umbrales oficiales de alerta y
   evacuación, mapa interactivo, distancia a cada umbral y panel separado con
-  las alturas publicadas por la Prefectura Naval.
+  las alturas publicadas por la Prefectura Naval. Suscripción opcional a avisos
+  Web Push por dispositivo (geolocalización solo en el navegador, selección
+  manual, sin coordenadas en el servidor). Los avisos derivan de umbrales
+  oficiales del INA y no son un boletín oficial de emergencia. En iOS/iPadOS
+  16.4+ es necesario tener la app instalada.
 - **Ríos** — catálogo navegable de ríos, tramos y estaciones hidrométricas de la
   Cuenca del Plata, con búsqueda en vivo.
 - **Estaciones** — catálogo completo y ficha de cada escala con los últimos 90
@@ -57,8 +67,8 @@ ni se guardan series históricas en el servidor.
 | Tipografía     | Monaspace (autoalojada) + Source Serif 4                         |
 | Tests          | Vitest 5 + happy-dom, Playwright y axe-core                      |
 | Calidad        | Biome (lint + format) e Impeccable                               |
-| Backend        | Worker con proxies de INA, Open-Meteo y Prefectura, y caché de borde |
-| PWA            | Manifest por idioma, iconos instalables y service worker propio  |
+| Backend        | Worker con proxies de INA, Open-Meteo y Prefectura, caché de borde, API de avisos push, KV y Cron Trigger cada 15 minutos |
+| PWA            | Manifest por idioma, iconos instalables, service worker propio y avisos Web Push |
 | Deploy         | Cloudflare Workers (Static Assets) con Wrangler                  |
 
 TypeScript estricto de punta a punta (`strict`, `noUncheckedIndexedAccess`,
@@ -184,8 +194,10 @@ aplicación y los assets con hash para que pueda abrirse sin conexión. **El
 service worker no cachea datos**: las consultas van al Worker, que comparte una
 caché de borde de una hora entre visitantes. Así se reduce el tráfico sin
 mostrar lecturas inventadas ni congelar una copia local por tiempo indefinido.
-En Android y escritorio el navegador ofrece el botón de instalación; en iPhone y
-iPad se usa _Compartir → Añadir a pantalla de inicio_.
+El service worker gestiona `push` y `notificationclick` para los avisos de
+inundación. En Android y escritorio el navegador ofrece el botón de instalación;
+en iPhone y iPad se usa _Compartir → Añadir a pantalla de inicio_. Para recibir
+avisos push en iOS/iPadOS es necesario tener la app instalada y usar iOS 16.4+.
 
 ## Accesibilidad y rendimiento
 

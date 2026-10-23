@@ -1,12 +1,14 @@
 /**
  * Service worker de Mi Clima by IT Rosario.
  *
- * Solo guarda el armazon de la aplicacion (paginas, iconos y assets con hash).
- * Los datos meteorologicos e hidrologicos nunca se cachean aca: las consultas
- * van al Worker, que comparte una cache de borde de una hora entre visitantes.
+ * Guarda el armazon de la aplicacion (paginas, iconos y assets con hash),
+ * recibe las notificaciones Web Push y abre la pagina de alertas cuando la
+ * persona toca una notificacion. Los datos meteorologicos e hidrologicos nunca
+ * se cachean aca: las consultas van al Worker, que comparte una cache de borde
+ * de una hora entre visitantes.
  */
 
-const staticCacheName = "mi-clima-static-v1";
+const staticCacheName = "mi-clima-static-v2";
 const appShellPaths = [
   "/es/",
   "/en/",
@@ -69,6 +71,78 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(cacheFirst(request));
   }
 });
+
+self.addEventListener("push", (event) => {
+  const payload = readPushPayload(event);
+
+  event.waitUntil(
+    self.registration.showNotification(payload.title, {
+      body: payload.body,
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      tag: payload.tag,
+      data: { url: payload.url },
+      requireInteraction: payload.type === "evacuation",
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  const targetUrl = new URL(event.notification.data?.url ?? "/es/alertas/", self.location.origin)
+    .href;
+
+  event.notification.close();
+
+  event.waitUntil(
+    (async () => {
+      const windows = await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+      const existingWindow = windows.find((client) => client.url.startsWith(self.location.origin));
+
+      if (existingWindow !== undefined) {
+        await existingWindow.focus();
+
+        if ("navigate" in existingWindow) {
+          await existingWindow.navigate(targetUrl);
+        }
+
+        return;
+      }
+
+      await self.clients.openWindow(targetUrl);
+    })(),
+  );
+});
+
+function readPushPayload(event) {
+  const fallback = {
+    title: "Mi Clima",
+    body: "Hay novedades en la alerta de inundacion.",
+    url: "/es/alertas/",
+    tag: "mi-clima-alerta",
+    type: "alert",
+  };
+
+  if (event.data === null) {
+    return fallback;
+  }
+
+  try {
+    const payload = event.data.json();
+
+    return {
+      title: typeof payload.title === "string" ? payload.title : fallback.title,
+      body: typeof payload.body === "string" ? payload.body : fallback.body,
+      url: typeof payload.url === "string" ? payload.url : fallback.url,
+      tag: typeof payload.tag === "string" ? payload.tag : fallback.tag,
+      type: typeof payload.type === "string" ? payload.type : fallback.type,
+    };
+  } catch {
+    return fallback;
+  }
+}
 
 async function networkFirstNavigation(request, url) {
   const cache = await caches.open(staticCacheName);

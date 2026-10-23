@@ -26,6 +26,7 @@
     "verify": "npm run lint && npm run test:coverage && npm run build"
   },
   "dependencies": {
+    "@block65/webcrypto-web-push": "^2.0.0",
     "astro": "^7.4.2",
     "echarts": "^6.1.0",
     "leaflet": "^1.9.4"

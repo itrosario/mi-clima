@@ -19,6 +19,7 @@ import {
 } from "@/application/prefectura/loadCorridorPrefecturaSnapshot";
 import { rangeEndingAtHour } from "@/application/shared/time";
 import type { StationReading } from "@/application/station/loadStationReadings";
+import type { Station } from "@/domain/catalog/types";
 import type { FloodStatus } from "@/domain/flood/types";
 import type { DateRange } from "@/domain/telemetry/types";
 import { formatMeasurement } from "../format/formatters";
@@ -31,6 +32,7 @@ import { createStatusLegend } from "../rendering/kit";
 import { createPrefecturaTable } from "../rendering/prefectura";
 import { createSummaryTiles } from "../rendering/tables";
 import { stationHref } from "../routes";
+import { initAlertSubscription } from "../runtime/alertSubscription";
 import { startAutoRefresh } from "../runtime/autoRefresh";
 import { createEmptyState, queryElement, renderInto } from "../runtime/dom";
 import {
@@ -103,6 +105,7 @@ export async function startAlertsPage(options: PageOptions): Promise<void> {
   const form = queryElement<HTMLFormElement>(document, "[data-range-form]");
   const mapContainer = queryElement<HTMLElement>(document, "[data-station-map]");
   let map: MapController | null = null;
+  let subscriptionStations: readonly Station[] = [];
 
   if (form !== null) {
     writeFormRange(form, rangeEndingAtHour(services.clock.now(), defaultDashboardWindowDays));
@@ -127,6 +130,8 @@ export async function startAlertsPage(options: PageOptions): Promise<void> {
     if (stations.length === 0) {
       throw new Error(translations.dashboard.noStations);
     }
+
+    subscriptionStations = stations;
 
     const dashboard = await loadCorridorDashboard(
       stations,
@@ -204,5 +209,10 @@ export async function startAlertsPage(options: PageOptions): Promise<void> {
   }
 
   await run();
+
+  if (subscriptionStations.length > 0) {
+    initAlertSubscription(document, subscriptionStations, locale, translations.alerts.push);
+  }
+
   startAutoRefresh({ document, refresh: run });
 }

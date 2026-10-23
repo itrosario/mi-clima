@@ -41,6 +41,44 @@ const translations = getTranslations(locale);
       <div class="stat-grid" data-summary-tiles></div>
     </section>
 
+    <section class="section" aria-labelledby="alerts-push-title" data-alert-subscription>
+      <h2 id="alerts-push-title" class="section__title">{translations.alerts.push.title}</h2>
+      <p class="section__lead">{translations.alerts.push.lead}</p>
+      <div class="alert-subscription">
+        <div class="field">
+          <label class="field__label" for="alerts-push-zone">
+            {translations.alerts.push.zoneLabel}
+          </label>
+          <select
+            class="field__control"
+            id="alerts-push-zone"
+            data-alert-zone
+            aria-describedby="alerts-push-note"
+          >
+            <option value="">{translations.alerts.push.zonePlaceholder}</option>
+          </select>
+        </div>
+        <div class="alert-subscription__actions" role="group" aria-label={translations.alerts.push.title}>
+          <button class="button button--secondary" type="button" data-alert-locate disabled>
+            {translations.alerts.push.locate}
+          </button>
+          <button class="button" type="button" data-alert-enable disabled>
+            {translations.alerts.push.activate}
+          </button>
+          <button class="button button--secondary" type="button" data-alert-disable hidden>
+            {translations.alerts.push.deactivate}
+          </button>
+        </div>
+        <p
+          class="alert-subscription__status"
+          data-alert-subscription-status
+          role="status"
+          aria-live="polite"
+        ></p>
+        <p class="source-note" id="alerts-push-note">{translations.alerts.push.note}</p>
+      </div>
+    </section>
+
     <section class="section" aria-labelledby="alerts-map-title">
       <h2 id="alerts-map-title" class="section__title">{translations.alerts.mapTitle}</h2>
       <p class="section__lead">{translations.alerts.mapDescription}</p>

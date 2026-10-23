@@ -289,21 +289,30 @@
 .emergency-banner {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-4) var(--width-gutter);
-  background-color: var(--color-water-evacuation);
+  gap: var(--space-3);
+  padding: var(--space-2) var(--width-gutter);
+  background: linear-gradient(90deg, var(--color-water-evacuation) 0%, color-mix(in srgb, var(--color-water-evacuation) 85%, black) 100%);
   color: var(--color-text-inverted);
+  box-shadow: inset 0 -1px 0 rgb(255 255 255 / 0.14);
 }
 
 .emergency-banner__label {
-  font-size: var(--font-size-2xs);
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  background: rgb(255 255 255 / 0.18);
+  font-size: var(--font-size-3xs);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--letter-spacing-wide);
   text-transform: uppercase;
+  line-height: 1.8;
+  white-space: nowrap;
 }
 
 .emergency-banner__detail {
   font-size: var(--font-size-sm);
+  line-height: var(--line-height-tight);
 }
 
 .emergency-banner__link {
@@ -312,6 +321,7 @@
   font-weight: var(--font-weight-bold);
   text-decoration: underline;
   text-underline-offset: 3px;
+  white-space: nowrap;
 }
 
 /* --- Estado de carga --- */
@@ -985,10 +995,26 @@
 
   .emergency-banner {
     flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    align-items: center;
+  }
+
+  .emergency-banner__label {
+    font-size: 10px;
+    line-height: 1.7;
+    padding-inline: var(--space-1-5);
+  }
+
+  .emergency-banner__detail {
+    flex: 1 1 100%;
+    order: 3;
+    font-size: var(--font-size-xs);
   }
 
   .emergency-banner__link {
-    margin-inline-start: 0;
+    margin-inline-start: auto;
+    font-size: var(--font-size-xs);
   }
 
   .range-form {

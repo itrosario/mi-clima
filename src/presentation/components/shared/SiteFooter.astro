@@ -11,14 +11,15 @@ const { translations, localePrefix } = Astro.props;
 
 const sourceLinks = [
   { href: "https://alerta.ina.gob.ar/", label: "INA" },
-  { href: "https://inta.gob.ar/", label: "INTA" },
+  { href: "https://www.argentina.gob.ar/inta", label: "INTA" },
+  { href: "https://contenidosweb.prefecturanaval.gob.ar/alturas/", label: "Prefectura Naval" },
   { href: "https://open-meteo.com/", label: "Open-Meteo" },
 ] as const;
 
 const projectLinks = [
   { href: `${localePrefix}/`, label: translations.nav.dashboard },
-  { href: `${localePrefix}fuentes/`, label: translations.nav.sources },
-  { href: `${localePrefix}descargas/`, label: translations.nav.downloads },
+  { href: `${localePrefix}/fuentes/`, label: translations.nav.sources },
+  { href: `${localePrefix}/descargas/`, label: translations.nav.downloads },
 ] as const;
 ---
 

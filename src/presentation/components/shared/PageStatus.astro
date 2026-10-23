@@ -1,0 +1,28 @@
+---
+/**
+ * Estado de carga y caja de error con reintento.
+ *
+ * `runPage` muestra la carga mientras consulta y, si falla, escribe el mensaje
+ * y conecta el boton de reintento con el mismo ciclo.
+ */
+
+import type { TranslationSchema } from "../../i18n/translations/es";
+
+interface Props {
+  readonly translations: TranslationSchema;
+}
+
+const { translations } = Astro.props;
+---
+
+<div class="page-status">
+  <p class="page-status__loading skeleton skeleton--text" data-loading>
+    {translations.common.loading}
+  </p>
+
+  <div class="error-message" data-page-error hidden>
+    <p class="error-message__title" data-error-message></p>
+    <p>{translations.common.noConnection}</p>
+    <button class="button" type="button" data-retry>{translations.common.retry}</button>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+---
+/**
+ * Encabezado comun de las paginas de datos.
+ *
+ * Concentra el antetitulo, el titulo y la bajada para que todas las secciones
+ * mantengan la misma jerarquia tipografica.
+ */
+
+interface Props {
+  readonly eyebrow: string;
+  readonly title: string;
+  readonly lead: string;
+}
+
+const { eyebrow, title, lead } = Astro.props;
+---
+
+<section class="page-header">
+  <p class="page-header__eyebrow">{eyebrow}</p>
+  <h1>{title}</h1>
+  <p class="page-header__lead">{lead}</p>
+</section>

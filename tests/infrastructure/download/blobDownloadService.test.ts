@@ -9,6 +9,7 @@ let revokeObjectUrl: ReturnType<typeof vi.fn>;
 let downloadedFileNames: string[];
 
 beforeEach(() => {
+  document.body.replaceChildren();
   createObjectUrl = vi.fn(() => "blob:mi-clima");
   revokeObjectUrl = vi.fn();
   downloadedFileNames = [];

@@ -1,0 +1,30 @@
+---
+/**
+ * Formulario de rango de fechas.
+ *
+ * Los controladores precargan los campos y recalculan los datos al enviarlo.
+ * El envio nunca navega: el manejador de la pagina lo intercepta.
+ */
+
+import type { TranslationSchema } from "../../i18n/translations/es";
+
+interface Props {
+  readonly translations: TranslationSchema;
+}
+
+const { translations } = Astro.props;
+---
+
+<form class="range-form" data-range-form>
+  <div class="field">
+    <label class="field__label" for="range-from">{translations.common.from}</label>
+    <input class="field__control" id="range-from" name="from" type="date" required />
+  </div>
+
+  <div class="field">
+    <label class="field__label" for="range-to">{translations.common.to}</label>
+    <input class="field__control" id="range-to" name="to" type="date" required />
+  </div>
+
+  <button class="button button--primary" type="submit">{translations.common.apply}</button>
+</form>

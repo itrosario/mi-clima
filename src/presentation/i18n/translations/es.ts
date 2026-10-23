@@ -11,6 +11,7 @@ export const esTranslations = {
     fullTitle: "Mi Clima by IT Rosario",
     tagline: "Clima, alertas de inundacion y niveles hidrometricos de la Cuenca del Plata",
     byline: "by IT Rosario",
+    author: "Juan Martín Villanueva",
     description:
       "Agregador de datos oficiales argentinos: niveles del rio Parana, alertas de inundacion, clima y estadisticas hidrologicas en un solo lugar.",
   },
@@ -33,6 +34,10 @@ export const esTranslations = {
     dark: "Oscuro",
     auto: "Automatico",
     toggle: "Cambiar tema de color",
+  },
+  pwa: {
+    install: "Instalar aplicación",
+    installHint: "En iPhone o iPad, usá Compartir y después Añadir a pantalla de inicio.",
   },
   common: {
     loading: "Cargando...",
@@ -119,6 +124,16 @@ export const esTranslations = {
     withoutThresholds: "Estaciones sin umbral",
     chartTitle: "Niveles diarios del corredor",
     chartDescription: "Evolucion del nivel medio diario en las estaciones del corredor.",
+    chartModeLabel: "Vista del gráfico",
+    chartModeAbsolute: "Nivel absoluto",
+    chartModeIndex: "Índice vs. promedio",
+    chartIndexDescription:
+      "Cada curva se expresa como porcentaje de su propio promedio en el rango consultado.",
+    chartIndexUnit: "% del promedio",
+    chartAverageReference: "100 = promedio de cada estación",
+    chartAbsoluteNote: "Nivel medio diario en metros, tal como lo publica la fuente.",
+    chartIndexNote:
+      "Comparación normalizada: 100 representa el promedio de cada estación. No se proyectan valores futuros.",
     comparisonTitle: "Perfil longitudinal",
     comparisonDescription: "Diferencia de nivel entre estaciones en la ventana consultada.",
     weatherUnavailable: "El pronostico no esta disponible en este momento.",
@@ -301,6 +316,14 @@ export const esTranslations = {
   sources: {
     title: "Fuentes y metodologia",
     lead: "De donde viene cada dato, como se calculan los indicadores y quienes publican la informacion.",
+    aboutTitle: "Sobre el proyecto",
+    aboutLead: "Publicado para uso público y gratuito, sin registro ni costo.",
+    aboutPurpose:
+      "El sitio reúne en un solo lugar datos que los organismos oficiales publican por separado, para que cualquier persona pueda consultarlos con su fuente y fecha de actualización.",
+    aboutIntegrity:
+      "No se agregan, rellenan ni inventan lecturas. Cuando una fuente no publica un dato, la interfaz muestra el faltante; el pronóstico de Open-Meteo se identifica siempre como no oficial.",
+    aboutRepository:
+      "El código está publicado con licencia MIT y se puede descargar desde el repositorio en GitHub.",
     inaTitle: "INA - Instituto Nacional del Agua",
     inaDescription:
       "Sistema de Informacion Hidrologica de la Cuenca del Plata. Aporta estaciones, niveles hidrometricos, caudales, umbrales de alerta y evacuacion, y percentiles historicos por dia del ano.",
@@ -331,8 +354,9 @@ export const esTranslations = {
     about: "Acerca de",
     data: "Datos",
     legal: "Aviso legal",
+    repository: "Código fuente en GitHub",
     disclaimer:
-      "Proyecto tecnico de IT Rosario. Los datos pertenecen a los organismos oficiales publicadores y se reproducen con fines informativos.",
+      "Un proyecto de Juan Martín Villanueva para IT Rosario. Sitio de uso público y recopilación de datos oficiales. No se agregan ni se inventan datos: cuando una fuente no publica una lectura, se muestra como faltante.",
     version: "Version {version}",
   },
 } as const;

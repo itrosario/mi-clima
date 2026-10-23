@@ -28,6 +28,7 @@ export interface LeafletMarkerLike {
 
 export interface LeafletMapLike {
   fitBounds(bounds: unknown): void;
+  invalidateSize(): void;
   remove(): void;
 }
 
@@ -59,11 +60,11 @@ export const openStreetMapTiles = {
 };
 
 export const markerColors: Record<FloodStatus, string> = {
-  evacuation: "#7f1d1d",
-  alert: "#c2410c",
-  normal: "#15803d",
-  low: "#a16207",
-  undefined: "#52525b",
+  evacuation: "#b3261e",
+  alert: "#9a6400",
+  normal: "#167a5b",
+  low: "#3d6fb4",
+  undefined: "#64747d",
 };
 
 export function buildMarkerPopup(document: Document, marker: MapMarker): HTMLElement {
@@ -98,6 +99,10 @@ export function createStationMap(
 ): MapController {
   const document = container.ownerDocument;
   const map = leaflet.map(container, { center: corridorMapCenter, zoom: 7 });
+  const resizeObserver = new ResizeObserver(() => {
+    map.invalidateSize();
+  });
+  resizeObserver.observe(container);
 
   leaflet
     .tileLayer(openStreetMapTiles.url, {
@@ -127,6 +132,7 @@ export function createStationMap(
 
   return {
     dispose: () => {
+      resizeObserver.disconnect();
       map.remove();
     },
   };

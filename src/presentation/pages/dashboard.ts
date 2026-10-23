@@ -17,7 +17,7 @@ import { loadWeather, type WeatherView } from "@/application/weather/loadWeather
 import type { DateRange } from "@/domain/telemetry/types";
 import { buildLineChartOption } from "../charts/chartOptions";
 import type { ChartRenderer } from "../charts/chartRenderer";
-import { buildCorridorChartInput } from "../charts/readingSeries";
+import { buildCorridorChartInput, type CorridorChartMode } from "../charts/readingSeries";
 import { formatDate } from "../format/formatters";
 import { getTranslations } from "../i18n";
 import { evacuatingStationNames, updateEmergencyBanner } from "../rendering/emergency";
@@ -41,12 +41,42 @@ interface DashboardData {
   readonly range: DateRange;
 }
 
+function chartNoteText(
+  mode: CorridorChartMode,
+  translations: ReturnType<typeof getTranslations>,
+): string {
+  return mode === "index"
+    ? translations.dashboard.chartIndexNote
+    : translations.dashboard.chartAbsoluteNote;
+}
+
+function dashboardChartInput(
+  data: DashboardData,
+  mode: CorridorChartMode,
+  locale: ReturnType<typeof readPageLocale>,
+  translations: ReturnType<typeof getTranslations>,
+): ReturnType<typeof buildCorridorChartInput> {
+  const isIndexView = mode === "index";
+
+  return buildCorridorChartInput(data.dashboard.readings, {
+    locale,
+    unit: isIndexView ? translations.dashboard.chartIndexUnit : waterLevelUnit,
+    description: isIndexView
+      ? translations.dashboard.chartIndexDescription
+      : translations.dashboard.chartDescription,
+    mode,
+    averageReferenceLabel: translations.dashboard.chartAverageReference,
+  });
+}
+
 export async function startDashboardPage(options: PageOptions): Promise<void> {
   const { document, services } = resolvePageContext(options);
   const locale = readPageLocale(document);
   const translations = getTranslations(locale);
   const form = queryElement<HTMLFormElement>(document, "[data-range-form]");
   const chartContainer = queryElement<HTMLElement>(document, "[data-corridor-chart]");
+  const chartModeControl = queryElement<HTMLSelectElement>(document, "[data-corridor-chart-mode]");
+  const chartNote = queryElement<HTMLElement>(document, "[data-corridor-chart-note]");
   let chart: ChartRenderer | null = null;
 
   if (form !== null) {
@@ -56,6 +86,22 @@ export async function startDashboardPage(options: PageOptions): Promise<void> {
   const readRange = (): DateRange =>
     (form === null ? null : readFormRange(form)) ??
     rangeEndingAt(services.clock.now(), defaultDashboardWindowDays);
+
+  const currentChartMode = (): CorridorChartMode =>
+    chartModeControl !== null && chartModeControl.value === "index" ? "index" : "absolute";
+
+  const renderChart = async (data: DashboardData): Promise<void> => {
+    const mode = currentChartMode();
+
+    if (chartNote !== null) {
+      chartNote.textContent = chartNoteText(mode, translations);
+    }
+
+    if (chartContainer !== null && options.chartFactory !== undefined) {
+      chart ??= await options.chartFactory(chartContainer);
+      chart.render(buildLineChartOption(dashboardChartInput(data, mode, locale, translations)));
+    }
+  };
 
   const load = async (signal: AbortSignal): Promise<DashboardData> => {
     const range = readRange();
@@ -131,22 +177,13 @@ export async function startDashboardPage(options: PageOptions): Promise<void> {
       ),
     ]);
 
-    if (chartContainer !== null && options.chartFactory !== undefined) {
-      if (chart === null) {
-        chart = await options.chartFactory(chartContainer);
-      }
-
-      chart.render(
-        buildLineChartOption(
-          buildCorridorChartInput(
-            dashboard.readings,
-            locale,
-            waterLevelUnit,
-            translations.dashboard.chartDescription,
-          ),
-        ),
-      );
+    if (chartModeControl !== null) {
+      chartModeControl.onchange = () => {
+        void renderChart(data);
+      };
     }
+
+    await renderChart(data);
   };
 
   const run = (): Promise<void> =>

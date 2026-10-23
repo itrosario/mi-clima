@@ -1,5 +1,6 @@
 ---
 import type { TranslationSchema } from "../../i18n/translations/es";
+import InstallAppButton from "./InstallAppButton.astro";
 
 interface Props {
   translations: TranslationSchema;
@@ -66,6 +67,19 @@ const projectLinks = [
         </ul>
       </div>
     </div>
+
+    <InstallAppButton translations={translations} />
+
+    <p class="site-footer__repo">
+      <a
+        class="text-link"
+        href="https://github.com/itrosario/mi-clima"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        {translations.footer.repository}
+      </a>
+    </p>
 
     <p class="site-footer__legal">{translations.footer.disclaimer}</p>
   </div>

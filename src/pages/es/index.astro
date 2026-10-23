@@ -54,6 +54,16 @@ const translations = getTranslations(locale);
       <h2 id="dashboard-chart-title" class="section__title">
         {translations.dashboard.chartTitle}
       </h2>
+      <div class="chart-toolbar">
+        <label class="field field--compact" for="corridor-chart-mode">
+          <span class="field__label">{translations.dashboard.chartModeLabel}</span>
+          <select class="field__control" id="corridor-chart-mode" data-corridor-chart-mode>
+            <option value="absolute">{translations.dashboard.chartModeAbsolute}</option>
+            <option value="index">{translations.dashboard.chartModeIndex}</option>
+          </select>
+        </label>
+        <p class="source-note chart-toolbar__note" data-corridor-chart-note></p>
+      </div>
       <div class="chart-frame" data-corridor-chart></div>
     </section>
 

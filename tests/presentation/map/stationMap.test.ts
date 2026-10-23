@@ -1,6 +1,6 @@
 /** @vitest-environment happy-dom */
 
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   buildMarkerPopup,
   corridorMapCenter,
@@ -23,8 +23,31 @@ const marker: MapMarker = {
   linkLabel: "Ver detalle",
 };
 
+function installFakeResizeObserver() {
+  const observe = vi.fn();
+  const disconnect = vi.fn();
+  const callbacks: (() => void)[] = [];
+
+  class FakeResizeObserver {
+    constructor(callback: () => void) {
+      callbacks.push(callback);
+    }
+
+    readonly observe = observe;
+    readonly disconnect = disconnect;
+  }
+
+  vi.stubGlobal("ResizeObserver", FakeResizeObserver);
+
+  return {
+    trigger: () => callbacks[0]?.(),
+    observe,
+    disconnect,
+  };
+}
+
 function createFakeLeaflet() {
-  const map = { fitBounds: vi.fn(), remove: vi.fn() };
+  const map = { fitBounds: vi.fn(), invalidateSize: vi.fn(), remove: vi.fn() };
   const layer = { addTo: vi.fn() };
   layer.addTo.mockReturnValue(layer);
   const stationMarker = { addTo: vi.fn(), bindPopup: vi.fn() };
@@ -57,8 +80,13 @@ describe("buildMarkerPopup", () => {
   });
 });
 
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
 describe("createStationMap", () => {
   it("dibuja el mapa, las baldosas y una marca por estacion", () => {
+    const observer = installFakeResizeObserver();
     const container = window.document.createElement("div");
     const { leaflet, map, layer, stationMarker } = createFakeLeaflet();
     const other = { ...marker, stationId: "35", name: "Villa", latitude: -33.2, longitude: -60.3 };
@@ -84,8 +112,13 @@ describe("createStationMap", () => {
       [other.latitude, other.longitude],
     ]);
     expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    expect(observer.observe).toHaveBeenCalledWith(container);
+
+    observer.trigger();
+    expect(map.invalidateSize).toHaveBeenCalledTimes(1);
 
     controller.dispose();
+    expect(observer.disconnect).toHaveBeenCalledTimes(1);
     expect(map.remove).toHaveBeenCalledTimes(1);
   });
 

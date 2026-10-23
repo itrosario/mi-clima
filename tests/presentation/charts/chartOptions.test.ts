@@ -29,6 +29,27 @@ describe("buildLineChartOption", () => {
     expect(option.color).toEqual([...chartPalette]);
   });
 
+  it("dibuja la linea de referencia solo en la primera serie", () => {
+    const option = buildLineChartOption({
+      categories: ["21/10", "22/10"],
+      series: [
+        { name: "Rosario", values: [80, 120] },
+        { name: "Villa", values: [90, 110] },
+      ],
+      unit: "% del promedio",
+      description: "Índice del corredor",
+      referenceLine: { value: 100, label: "100 = promedio" },
+    });
+
+    const series = option.series as {
+      markLine?: { data: { yAxis: number }[]; label: { formatter: string } };
+    }[];
+
+    expect(series[0]?.markLine?.data).toEqual([{ yAxis: 100 }]);
+    expect(series[0]?.markLine?.label.formatter).toBe("100 = promedio");
+    expect(series[1]?.markLine).toBeUndefined();
+  });
+
   it("formatea el valor del globo y tolera datos no numericos", () => {
     const formatter = readTooltipFormatter(
       buildLineChartOption({

@@ -1,0 +1,22 @@
+---
+import type { TranslationSchema } from "../../i18n/translations/es";
+
+interface Props {
+  readonly translations: TranslationSchema;
+}
+
+const { translations } = Astro.props;
+---
+
+<div class="install-app" data-install-app hidden>
+  <button class="button button--primary" type="button" data-install-button>
+    {translations.pwa.install}
+  </button>
+</div>
+<p class="install-app__hint">{translations.pwa.installHint}</p>
+
+<script>
+  import { initInstallPrompt } from "@/presentation/scripts/installPrompt";
+
+  initInstallPrompt(document);
+</script>

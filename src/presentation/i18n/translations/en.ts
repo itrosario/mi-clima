@@ -10,6 +10,7 @@ export const enTranslations: TranslationSchema = {
     fullTitle: "My Climate by IT Rosario",
     tagline: "Weather, flood alerts and river levels for the Plata Basin",
     byline: "by IT Rosario",
+    author: "Juan Martín Villanueva",
     description:
       "Aggregator of official Argentine data: Parana river levels, flood alerts, weather and hydrological statistics in one place.",
   },
@@ -32,6 +33,10 @@ export const enTranslations: TranslationSchema = {
     dark: "Dark",
     auto: "Automatic",
     toggle: "Change colour theme",
+  },
+  pwa: {
+    install: "Install app",
+    installHint: "On iPhone or iPad, use Share and then Add to Home Screen.",
   },
   common: {
     loading: "Loading...",
@@ -118,6 +123,16 @@ export const enTranslations: TranslationSchema = {
     withoutThresholds: "Stations without threshold",
     chartTitle: "Daily corridor levels",
     chartDescription: "Evolution of the mean daily level at the corridor stations.",
+    chartModeLabel: "Chart view",
+    chartModeAbsolute: "Absolute level",
+    chartModeIndex: "Index vs. average",
+    chartIndexDescription:
+      "Each curve is expressed as a percentage of its own average in the queried range.",
+    chartIndexUnit: "% of average",
+    chartAverageReference: "100 = average of each station",
+    chartAbsoluteNote: "Mean daily level in metres, as published by the source.",
+    chartIndexNote:
+      "Normalised comparison: 100 represents each station's average. No future values are projected.",
     comparisonTitle: "Longitudinal profile",
     comparisonDescription: "Level difference between stations in the queried window.",
     weatherUnavailable: "The forecast is not available right now.",
@@ -300,6 +315,14 @@ export const enTranslations: TranslationSchema = {
   sources: {
     title: "Sources and methodology",
     lead: "Where each datum comes from, how the indicators are computed and who publishes the information.",
+    aboutTitle: "About the project",
+    aboutLead: "Published for public and free use, with no registration or cost.",
+    aboutPurpose:
+      "The site brings together data that official agencies publish separately, so anyone can consult it with its source and update date.",
+    aboutIntegrity:
+      "No readings are added, filled in or invented. When a source does not publish a datum, the interface shows it as missing; the Open-Meteo forecast is always labelled as unofficial.",
+    aboutRepository:
+      "The code is published under the MIT licence and can be downloaded from the GitHub repository.",
     inaTitle: "INA - National Water Institute",
     inaDescription:
       "Hydrological Information System of the Plata Basin. Provides stations, river levels, discharges, alert and evacuation thresholds, and historical percentiles per day of year.",
@@ -330,8 +353,9 @@ export const enTranslations: TranslationSchema = {
     about: "About",
     data: "Data",
     legal: "Legal notice",
+    repository: "Source code on GitHub",
     disclaimer:
-      "Technical project of IT Rosario. The data belongs to the official publishing agencies and is reproduced for informational purposes.",
+      "A project by Juan Martín Villanueva for IT Rosario. Public-interest site compiling official data. No data is added or invented: when a source does not publish a reading, it is shown as missing.",
     version: "Version {version}",
   },
 };

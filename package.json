@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "description": "Agregador de datos oficiales de clima, alerta de inundacion y niveles hidrometricos de la Cuenca del Plata.",
+  "author": "Juan Martín Villanueva",
+  "license": "MIT",
   "engines": {
     "node": ">=22.23.4"
   },

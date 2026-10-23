@@ -98,15 +98,21 @@ Reglas prácticas:
 - Un commit, una idea. Si el mensaje necesita una conjunción, probablemente
   sean dos commits.
 - Nada de `git add .` a ciegas: se revisa el diff antes de preparar.
-- No se reescribe historia compartida (`master`).
+- No se reescribe historia compartida (`main`).
 
 ## Pull requests
 
-1. Creá una rama desde `master`: `git switch -c feature/...`.
-2. Trabajá con commits pequeños y Atómicos.
+La rama `main` está protegida: **no se aceptan pushes directos**. Los cambios
+de cualquier colaborador entran por pull request. Solo el mantenedor tiene
+permiso para saltarse la regla en una emergencia.
+
+1. Creá una rama desde `main`: `git switch -c feature/...`.
+2. Trabajá con commits pequeños y atómicos.
 3. Verificá que `npm run verify` y `npm run e2e` pasan en local.
 4. Actualizá el `CHANGELOG.md` bajo `[No publicado]`.
 5. Abrí la pull request describiendo el cambio y su impacto en el usuario.
+6. La pull request necesita al menos una aprobación y la conversación resuelta
+   antes de fusionarse.
 
 ## Datos y fuentes
 

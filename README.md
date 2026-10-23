@@ -4,6 +4,14 @@ Agregador de datos oficiales argentinos sobre clima, alertas de inundación y
 niveles hidrométricos de la Cuenca del Plata, publicado como sitio estático en
 `/es/` y `/en/`.
 
+**Un proyecto de Juan Martín Villanueva para IT Rosario**, de uso público y
+gratuito. El sitio recopila y ordena datos oficiales; no agrega, rellena ni
+inventa lecturas. Cuando una fuente no publica un dato, la interfaz lo muestra
+como faltante.
+
+Código fuente, incidencias y propuestas:
+[github.com/itrosario/mi-clima](https://github.com/itrosario/mi-clima).
+
 El sitio no tiene base de datos, tareas programadas ni instantáneas de datos
 versionadas: cada página consulta las fuentes al abrirse y vuelve a consultarlas
 cuando cambia el rango de fechas. El INA y Open-Meteo se llaman directamente
@@ -16,7 +24,8 @@ mínimo del propio dominio, porque su sitio no habilita CORS.
 
 - **Panel** — estado actual del corredor del Paraná (Corrientes, Paraná, Santa
   Fe, San Lorenzo, Rosario y Villa Constitución) con semáforo de inundación,
-  comparación entre estaciones, gráfico y clima de Rosario.
+  comparación entre estaciones, gráfico en nivel absoluto o como índice contra
+  el promedio de cada estación, y clima de Rosario.
 - **Alertas** — semáforo por estación contra los umbrales oficiales de alerta y
   evacuación, mapa interactivo, distancia a cada umbral y panel separado con
   las alturas publicadas por la Prefectura Naval.
@@ -47,6 +56,7 @@ mínimo del propio dominio, porque su sitio no habilita CORS.
 | Tests          | Vitest 5 + happy-dom, Playwright y axe-core                      |
 | Calidad        | Biome (lint + format) e Impeccable                               |
 | Backend        | Worker mínimo para el proxy de Prefectura, sin estado            |
+| PWA            | Manifest por idioma, iconos instalables y service worker propio  |
 | Deploy         | Cloudflare Workers (Static Assets) con Wrangler                  |
 
 TypeScript estricto de punta a punta (`strict`, `noUncheckedIndexedAccess`,
@@ -151,19 +161,36 @@ Cloudflare observa el repositorio y reconstruye en cada cambio. Los encabezados
 de seguridad y de cache de los archivos estáticos viajan en `public/_headers`;
 el Worker agrega el cache de borde del proxy de Prefectura.
 
+## Aplicación instalable
+
+El sitio se puede instalar en Android, iPhone, iPad y escritorio. Cada idioma
+tiene su propio manifest (`/manifest.es.webmanifest` y
+`/manifest.en.webmanifest`), con iconos de 192 y 512 px, versión maskable y
+`apple-touch-icon`.
+
+El service worker (`/service-worker.js`) guarda únicamente el armazón de la
+aplicación y los assets con hash para que pueda abrirse sin conexión. **Los
+datos hidrológicos y meteorológicos nunca se cachean**: cada consulta va a las
+fuentes oficiales, igual que en la versión en línea. En Android y escritorio el
+navegador ofrece el botón de instalación; en iPhone y iPad se usa
+_Compartir → Añadir a pantalla de inicio_.
+
 ## Accesibilidad y rendimiento
 
 Objetivo WCAG 2.1 AA. `axe-core` corre sobre las dieciséis vistas (ocho
 secciones por idioma) en los tests end-to-end. El sitio respeta navegación por
 teclado, foco visible, jerarquía de encabezados, contraste y
-`prefers-reduced-motion`.
+`prefers-reduced-motion`. La navegación, los formularios, los gráficos y el mapa
+se prueban también a 390 px de ancho para verificar que no haya desbordes
+horizontales.
 
 ECharts y Leaflet se importan dinámicamente solo en las páginas que los usan.
 El contenido se renderiza en el servidor como HTML estático y los controladores
-del navegador completan los datos sin hidratar componentes.
+del navegador completan los datos sin hidratar componentes. Los gráficos y el
+mapa escuchan cambios de tamaño para adaptarse a la rotación del teléfono.
 
 ## Licencia
 
-[MIT](LICENSE) para el código. Los datos publicados por los organismos
+[MIT](LICENSE) para el código, © Juan Martín Villanueva (IT Rosario). Los datos publicados por los organismos
 oficiales de la República Argentina son de dominio público y se reproducen con
 fines informativos, citando siempre su fuente.

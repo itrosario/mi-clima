@@ -18,11 +18,11 @@ import { MemoryCache } from "@/infrastructure/cache/memoryCache";
 import { SessionStorageCache } from "@/infrastructure/cache/sessionStorageCache";
 import { BlobDownloadService } from "@/infrastructure/download/blobDownloadService";
 import { FetchHttpClient } from "@/infrastructure/http/fetchHttpClient";
-import { InaApiClient } from "@/infrastructure/ina/inaApiClient";
+import { InaApiClient, inaBaseUrl } from "@/infrastructure/ina/inaApiClient";
 import { InaHydrologySource } from "@/infrastructure/ina/inaHydrologySource";
 import { InaPercentilesSource } from "@/infrastructure/ina/inaPercentilesSource";
 import { InaStationCatalogSource } from "@/infrastructure/ina/inaStationCatalogSource";
-import { OpenMeteoSource } from "@/infrastructure/openMeteo/openMeteoSource";
+import { OpenMeteoSource, openMeteoForecastUrl } from "@/infrastructure/openMeteo/openMeteoSource";
 import { PrefecturaApiSource } from "@/infrastructure/prefectura/prefecturaApiSource";
 
 export interface AppServices {
@@ -59,7 +59,9 @@ export function createAppServices(options: AppServicesOptions = {}): AppServices
     options.fetchImplementation === undefined
       ? new FetchHttpClient()
       : new FetchHttpClient({ fetchImplementation: options.fetchImplementation });
-  const inaClient = new InaApiClient(http);
+  const inaClient = import.meta.env.DEV
+    ? new InaApiClient(http, inaBaseUrl)
+    : new InaApiClient(http);
   const document = options.document ?? globalThis.document;
 
   return {
@@ -70,7 +72,9 @@ export function createAppServices(options: AppServicesOptions = {}): AppServices
     hydrologySource: new InaHydrologySource(inaClient),
     percentilesSource: new InaPercentilesSource(inaClient),
     prefecturaSource: new PrefecturaApiSource(http),
-    weatherSource: new OpenMeteoSource(http),
+    weatherSource: import.meta.env.DEV
+      ? new OpenMeteoSource(http, openMeteoForecastUrl)
+      : new OpenMeteoSource(http),
     downloadService: new BlobDownloadService(document),
   };
 }

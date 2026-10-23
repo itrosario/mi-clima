@@ -12,34 +12,27 @@ import {
   parsePrefecturaHistory,
   parsePrefecturaReadings,
 } from "@/infrastructure/prefectura/prefecturaHtmlParser";
+import {
+  jsonResponse,
+  readCachedResponse,
+  storeCachedResponse,
+  type WorkerCache,
+} from "./edgeCache";
+
+export type { WorkerCache } from "./edgeCache";
 
 export const prefecturaSnapshotPath = "/api/prefectura";
 export const prefecturaHistoryPath = "/api/prefectura/historico";
 
 const prefecturaSourceUrl = "https://contenidosweb.prefecturanaval.gob.ar/alturas/";
-const snapshotCacheSeconds = 60;
-const historyCacheSeconds = 300;
-
-export interface WorkerCache {
-  match(request: Request): Promise<Response | undefined>;
-  put(request: Request, response: Response): Promise<void>;
-}
+const snapshotCacheSeconds = 60 * 60;
+const historyCacheSeconds = 60 * 60;
 
 export interface PrefecturaWorkerDependencies {
   /** Cache del borde; las pruebas inyectan un doble en memoria. */
   readonly cache?: WorkerCache | null;
   readonly fetchImplementation?: typeof fetch;
   readonly now?: () => Date;
-}
-
-function jsonResponse(body: unknown, status: number, cacheSeconds: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-      "cache-control": cacheSeconds === 0 ? "no-store" : `public, max-age=${cacheSeconds}`,
-    },
-  });
 }
 
 function serializeReading(reading: PrefecturaReading): Record<string, unknown> {
@@ -136,27 +129,6 @@ function readPortId(url: URL): number | null {
   const raw = Number(url.searchParams.get("id"));
 
   return Number.isInteger(raw) && raw > 0 ? raw : null;
-}
-
-async function readCachedResponse(
-  cache: WorkerCache | null,
-  cacheKey: Request,
-): Promise<Response | null> {
-  if (cache === null) {
-    return null;
-  }
-
-  return (await cache.match(cacheKey)) ?? null;
-}
-
-async function storeCachedResponse(
-  cache: WorkerCache | null,
-  cacheKey: Request,
-  response: Response,
-): Promise<void> {
-  if (cache !== null && response.ok) {
-    await cache.put(cacheKey, response.clone());
-  }
 }
 
 export async function handlePrefecturaRequest(

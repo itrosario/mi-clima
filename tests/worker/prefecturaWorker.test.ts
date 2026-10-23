@@ -85,7 +85,7 @@ describe("handlePrefecturaRequest", () => {
     };
 
     expect(response.status).toBe(200);
-    expect(response.headers.get("cache-control")).toBe("public, max-age=60");
+    expect(response.headers.get("cache-control")).toBe("public, max-age=3600");
     expect(payload.fetchedAt).toBe(now.toISOString());
     expect(payload.sourceName).toBe("Prefectura Naval Argentina");
     expect(payload.readings).toHaveLength(2);
@@ -188,7 +188,7 @@ describe("handlePrefecturaRequest", () => {
     };
 
     expect(response.status).toBe(200);
-    expect(response.headers.get("cache-control")).toBe("public, max-age=300");
+    expect(response.headers.get("cache-control")).toBe("public, max-age=3600");
     expect(payload.portId).toBe(280);
     expect(payload.points).toHaveLength(2);
     expect(payload.points[0]).toEqual({

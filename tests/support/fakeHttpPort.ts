@@ -33,5 +33,9 @@ export function inaResponse(rows: readonly unknown[]): HttpResponse {
 }
 
 export function requestParameters(request: HttpRequest): URLSearchParams {
-  return new URLSearchParams(request.body ?? "");
+  if (request.body !== undefined && request.body.length > 0) {
+    return new URLSearchParams(request.body);
+  }
+
+  return new URL(request.url, "https://mi-clima.test").searchParams;
 }

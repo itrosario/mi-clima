@@ -17,7 +17,7 @@ import {
   type CorridorPrefecturaView,
   loadCorridorPrefecturaSnapshot,
 } from "@/application/prefectura/loadCorridorPrefecturaSnapshot";
-import { rangeEndingAt } from "@/application/shared/time";
+import { rangeEndingAtHour } from "@/application/shared/time";
 import type { StationReading } from "@/application/station/loadStationReadings";
 import type { FloodStatus } from "@/domain/flood/types";
 import type { DateRange } from "@/domain/telemetry/types";
@@ -31,6 +31,7 @@ import { createStatusLegend } from "../rendering/kit";
 import { createPrefecturaTable } from "../rendering/prefectura";
 import { createSummaryTiles } from "../rendering/tables";
 import { stationHref } from "../routes";
+import { startAutoRefresh } from "../runtime/autoRefresh";
 import { createEmptyState, queryElement, renderInto } from "../runtime/dom";
 import {
   readFormRange,
@@ -104,12 +105,12 @@ export async function startAlertsPage(options: PageOptions): Promise<void> {
   let map: MapController | null = null;
 
   if (form !== null) {
-    writeFormRange(form, rangeEndingAt(services.clock.now(), defaultDashboardWindowDays));
+    writeFormRange(form, rangeEndingAtHour(services.clock.now(), defaultDashboardWindowDays));
   }
 
   const readRange = (): DateRange =>
     (form === null ? null : readFormRange(form)) ??
-    rangeEndingAt(services.clock.now(), defaultDashboardWindowDays);
+    rangeEndingAtHour(services.clock.now(), defaultDashboardWindowDays);
 
   const load = async (signal: AbortSignal): Promise<AlertsData> => {
     const range = readRange();
@@ -203,4 +204,5 @@ export async function startAlertsPage(options: PageOptions): Promise<void> {
   }
 
   await run();
+  startAutoRefresh({ document, refresh: run });
 }

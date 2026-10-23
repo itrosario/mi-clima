@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { millisecondsPerDay, rangeEndingAt, shiftDays } from "@/application/shared/time";
+import {
+  millisecondsPerDay,
+  rangeEndingAt,
+  rangeEndingAtHour,
+  shiftDays,
+  startOfHour,
+} from "@/application/shared/time";
 
 describe("shiftDays", () => {
   it("avanza y retrocede dias sin tocar el reloj", () => {
@@ -18,5 +24,24 @@ describe("rangeEndingAt", () => {
 
     expect(range.to).toBe(end);
     expect(range.from.getTime()).toBe(end.getTime() - 7 * millisecondsPerDay);
+  });
+});
+
+describe("startOfHour", () => {
+  it("redondea hacia abajo sin modificar la fecha original", () => {
+    const original = new Date("2026-10-22T12:47:31.500Z");
+    const rounded = startOfHour(original);
+
+    expect(rounded.toISOString()).toBe("2026-10-22T12:00:00.000Z");
+    expect(original.toISOString()).toBe("2026-10-22T12:47:31.500Z");
+  });
+});
+
+describe("rangeEndingAtHour", () => {
+  it("cierra la ventana en la hora en punto", () => {
+    const range = rangeEndingAtHour(new Date("2026-10-22T12:47:31.500Z"), 7);
+
+    expect(range.to.toISOString()).toBe("2026-10-22T12:00:00.000Z");
+    expect(range.from.toISOString()).toBe("2026-10-15T12:00:00.000Z");
   });
 });

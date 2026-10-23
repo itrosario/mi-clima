@@ -55,7 +55,10 @@ afterAll(() => {
 });
 
 function createInaClient(): InaApiClient {
-  return new InaApiClient(new FetchHttpClient({ timeoutMilliseconds: 5_000, maxAttempts: 1 }));
+  return new InaApiClient(new FetchHttpClient({ timeoutMilliseconds: 5_000, maxAttempts: 1 }), {
+    baseUrl: inaBaseUrl,
+    transport: "direct",
+  });
 }
 
 describe("integracion con el INA", () => {
@@ -91,6 +94,7 @@ describe("integracion con Open-Meteo", () => {
   it("descarga la condicion actual y el pronostico", async () => {
     const snapshot = await new OpenMeteoSource(
       new FetchHttpClient({ timeoutMilliseconds: 5_000, maxAttempts: 1 }),
+      openMeteoForecastUrl,
     ).fetchWeather({
       location: { latitude: -32.95, longitude: -60.63 },
       timezone: "America/Argentina/Cordoba",

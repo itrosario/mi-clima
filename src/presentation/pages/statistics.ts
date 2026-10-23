@@ -9,7 +9,7 @@
 
 import { loadStationCatalog } from "@/application/catalog/loadStationCatalog";
 import { loadCorridorDashboard } from "@/application/dashboard/loadCorridorDashboard";
-import { rangeEndingAt } from "@/application/shared/time";
+import { rangeEndingAtHour } from "@/application/shared/time";
 import {
   defaultMovingWindowDays,
   type StationReading,
@@ -28,6 +28,7 @@ import { buildStationChartInput } from "../charts/readingSeries";
 import { getTranslations } from "../i18n";
 import { createAnomalyTiles, createTrendTiles } from "../rendering/statistics";
 import { createAnnualExtremesTable, createComparisonTable } from "../rendering/tables";
+import { startAutoRefresh } from "../runtime/autoRefresh";
 import { createEmptyState, createTextElement, queryElement, renderInto } from "../runtime/dom";
 import {
   readPageLocale,
@@ -163,14 +164,14 @@ export async function startStatisticsPage(options: PageOptions): Promise<void> {
       return { catalog, station: null, statistics: null, comparison: [], selectedId };
     }
 
-    const recentRange = rangeEndingAt(services.clock.now(), recentStatisticsWindowDays);
+    const recentRange = rangeEndingAtHour(services.clock.now(), recentStatisticsWindowDays);
     const corridor = corridorStations(catalog);
     const [statistics, corridorDashboard] = await Promise.all([
       loadStationStatistics(
         {
           station,
           recentRange,
-          historyRange: rangeEndingAt(services.clock.now(), historyWindowDays),
+          historyRange: rangeEndingAtHour(services.clock.now(), historyWindowDays),
         },
         {
           hydrologySource: services.hydrologySource,
@@ -271,4 +272,5 @@ export async function startStatisticsPage(options: PageOptions): Promise<void> {
   }
 
   await run();
+  startAutoRefresh({ document, refresh: run });
 }

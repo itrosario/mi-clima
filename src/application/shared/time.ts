@@ -18,3 +18,21 @@ export function shiftDays(date: Date, days: number): Date {
 export function rangeEndingAt(end: Date, days: number): DateRange {
   return { from: shiftDays(end, -days), to: end };
 }
+
+/**
+ * Redondea hacia abajo a la hora en punto.
+ *
+ * Las ventanas relativas se piden a la hora cerrada para que todos los
+ * visitantes compartan la misma clave de cache durante una hora.
+ */
+export function startOfHour(date: Date): Date {
+  const rounded = new Date(date);
+  rounded.setUTCMinutes(0, 0, 0);
+
+  return rounded;
+}
+
+/** Rango relativo que termina en la hora en punto anterior a `end`. */
+export function rangeEndingAtHour(end: Date, days: number): DateRange {
+  return rangeEndingAt(startOfHour(end), days);
+}

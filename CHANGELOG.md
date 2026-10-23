@@ -9,6 +9,13 @@ el proyecto sigue [Semantic Versioning](https://semver.org/lang/es/).
 
 ### Añadido
 
+- Proxies del Worker para INA y Open-Meteo, además de Prefectura, con caché de
+  borde compartida y renovación horaria. El catálogo del INA se guarda seis
+  horas y los percentiles un día.
+- Actualización automática de las páginas de datos cada hora mientras la pestaña
+  está visible, y al volver a ella si pasó más de una hora.
+- Las ventanas relativas terminan en la hora en punto para que todos los
+  visitantes compartan la misma clave de caché durante cada hora.
 - Autoría visible de Juan Martín Villanueva para IT Rosario en el pie, la página
   de fuentes y los metadatos del documento, junto con el propósito público del
   sitio y la aclaración de que no se agregan ni inventan datos.
@@ -18,7 +25,8 @@ el proyecto sigue [Semantic Versioning](https://semver.org/lang/es/).
 - Aplicación web instalable con manifest por idioma, iconos de 192/512 px,
   versión maskable, `apple-touch-icon`, botón de instalación y service worker.
 - El service worker cachea solo el armazón y los assets; las consultas de datos
-  siguen yendo siempre a las fuentes oficiales.
+  pasan por los proxies del Worker, que comparten una copia de borde durante una
+  hora.
 - Adaptación responsive del encabezado, formularios, gráficos, mapas, tarjetas y
   tablas, con soporte para áreas seguras y rotación de pantalla.
 - Enlace al repositorio de GitHub en el pie, la página de fuentes y el README,
@@ -26,6 +34,8 @@ el proyecto sigue [Semantic Versioning](https://semver.org/lang/es/).
 
 ### Cambiado
 
+- La Política de Seguridad de Contenido ya no permite conexiones directas a las
+  fuentes externas: todos los datos pasan por el mismo origen.
 - La licencia MIT queda a nombre de Juan Martín Villanueva (IT Rosario), y
   `package.json` declara autor y licencia.
 - Nueva paleta **Río sereno**: superficies frías, acento azul profundo y turquesa,

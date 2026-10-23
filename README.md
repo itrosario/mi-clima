@@ -12,11 +12,13 @@ como faltante.
 Código fuente, incidencias y propuestas:
 [github.com/itrosario/mi-clima](https://github.com/itrosario/mi-clima).
 
-El sitio no tiene base de datos, tareas programadas ni instantáneas de datos
-versionadas: cada página consulta las fuentes al abrirse y vuelve a consultarlas
-cuando cambia el rango de fechas. El INA y Open-Meteo se llaman directamente
-desde el navegador; las alturas de la Prefectura Naval pasan por un Worker
-mínimo del propio dominio, porque su sitio no habilita CORS.
+El sitio no tiene base de datos ni instantáneas de datos versionadas. Cada
+página consulta las fuentes al abrirse, se actualiza sola cada hora mientras la
+pestaña sigue visible y vuelve a consultar cuando cambia el rango de fechas. El
+INA, Open-Meteo y la Prefectura Naval pasan por proxies del Worker con una caché
+de borde compartida: la primera visita de cada hora consulta la fuente y las
+siguientes reciben esa misma lectura durante la hora. No hay tareas programadas
+ni se guardan series históricas en el servidor.
 
 ---
 
@@ -55,7 +57,7 @@ mínimo del propio dominio, porque su sitio no habilita CORS.
 | Tipografía     | Monaspace (autoalojada) + Source Serif 4                         |
 | Tests          | Vitest 5 + happy-dom, Playwright y axe-core                      |
 | Calidad        | Biome (lint + format) e Impeccable                               |
-| Backend        | Worker mínimo para el proxy de Prefectura, sin estado            |
+| Backend        | Worker con proxies de INA, Open-Meteo y Prefectura, y caché de borde |
 | PWA            | Manifest por idioma, iconos instalables y service worker propio  |
 | Deploy         | Cloudflare Workers (Static Assets) con Wrangler                  |
 
@@ -100,7 +102,7 @@ src/
 ├── infrastructure/ Adaptadores: INA, Prefectura, Open-Meteo, cachés, descargas.
 ├── presentation/   i18n, formateo, controladores de página, gráficos, mapa,
 │                   renderizado del DOM, componentes y estilos.
-└── worker/         Entrada del Worker y proxy de Prefectura con cache de borde.
+└── worker/         Entrada del Worker, proxies y caché de borde compartida.
 ```
 
 Reglas:
@@ -111,7 +113,9 @@ Reglas:
 - La presentación consume casos de uso; nunca habla con la red directamente.
 - Todo acceso externo pasa por un puerto, lo que permite simular la red
   completa en los tests sin salir a internet.
-- El Worker solo expone `/api/prefectura` y `/api/prefectura/historico`.
+- El Worker expone `/api/ina`, `/api/clima`, `/api/prefectura` y
+  `/api/prefectura/historico`. Los proxies solo reenvían parámetros permitidos y
+  cachean respuestas exitosas; los errores nunca se cachean.
 
 ### Estrategia de pruebas
 
@@ -135,9 +139,15 @@ configuración y las suites end-to-end.
 | Open-Meteo           | Condición actual y pronóstico (fuente no oficial)         | `api.open-meteo.com`                      |
 
 El INA exige `POST` con cuerpo `application/x-www-form-urlencoded`; las
-consultas con `GET` devuelven cero filas. El navegador lo consulta directamente
-porque publica CORS. La Prefectura no lo hace, así que el Worker descarga su
-tabla, la normaliza a JSON y la cachea en el borde durante pocos minutos.
+consultas con `GET` devuelven cero filas. El Worker recibe `GET` desde el
+navegador y reconstruye el formulario contra el INA. Open-Meteo y la Prefectura
+también pasan por el Worker, que normaliza la tabla de Prefectura a JSON.
+
+Las ventanas relativas terminan en la hora en punto para que todos los
+visitantes compartan la misma clave de caché. Las series y el clima se guardan
+una hora en el borde; el catálogo del INA, seis horas; los percentiles, un día.
+La primera visita de cada período actualiza la copia y las siguientes la
+reutilizan, sin guardar series históricas ni completar datos faltantes.
 
 Las estaciones que aparecen tanto en el INA como en la Prefectura se muestran
 por separado: la Prefectura manda en el panel oficial de alturas y el INA sigue
@@ -159,7 +169,8 @@ npx wrangler deploy
 `assets.directory = "./dist"` y `assets.not_found_handling = "404-page"`.
 Cloudflare observa el repositorio y reconstruye en cada cambio. Los encabezados
 de seguridad y de cache de los archivos estáticos viajan en `public/_headers`;
-el Worker agrega el cache de borde del proxy de Prefectura.
+el Worker agrega la caché de borde de los tres proxies y el frontend se refresca
+solo cada hora mientras la pestaña está visible.
 
 ## Aplicación instalable
 
@@ -169,11 +180,12 @@ tiene su propio manifest (`/manifest.es.webmanifest` y
 `apple-touch-icon`.
 
 El service worker (`/service-worker.js`) guarda únicamente el armazón de la
-aplicación y los assets con hash para que pueda abrirse sin conexión. **Los
-datos hidrológicos y meteorológicos nunca se cachean**: cada consulta va a las
-fuentes oficiales, igual que en la versión en línea. En Android y escritorio el
-navegador ofrece el botón de instalación; en iPhone y iPad se usa
-_Compartir → Añadir a pantalla de inicio_.
+aplicación y los assets con hash para que pueda abrirse sin conexión. **El
+service worker no cachea datos**: las consultas van al Worker, que comparte una
+caché de borde de una hora entre visitantes. Así se reduce el tráfico sin
+mostrar lecturas inventadas ni congelar una copia local por tiempo indefinido.
+En Android y escritorio el navegador ofrece el botón de instalación; en iPhone y
+iPad se usa _Compartir → Añadir a pantalla de inicio_.
 
 ## Accesibilidad y rendimiento
 

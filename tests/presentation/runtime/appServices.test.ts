@@ -7,6 +7,7 @@ import { createAppServices, resolveSessionStorage } from "@/presentation/runtime
 import { FakeClock } from "../../support/applicationFakes";
 
 afterEach(() => {
+  vi.unstubAllEnvs();
   vi.unstubAllGlobals();
 });
 
@@ -34,6 +35,24 @@ describe("createAppServices", () => {
     expect(services.percentilesSource).toBeDefined();
     expect(services.weatherSource).toBeDefined();
     expect(services.downloadService).toBeDefined();
+  });
+
+  it("arma fuentes directas cuando la app corre en desarrollo", () => {
+    vi.stubEnv("DEV", true);
+
+    const services = createAppServices({ document: window.document });
+
+    expect(services.hydrologySource).toBeDefined();
+    expect(services.weatherSource).toBeDefined();
+  });
+
+  it("arma los proxies cuando la app corre compilada", () => {
+    vi.stubEnv("DEV", false);
+
+    const services = createAppServices({ document: window.document });
+
+    expect(services.hydrologySource).toBeDefined();
+    expect(services.weatherSource).toBeDefined();
   });
 
   it("acepta almacenamiento, documento, reloj y transporte inyectados", async () => {

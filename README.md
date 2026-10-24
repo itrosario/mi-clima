@@ -139,6 +139,12 @@ El objetivo de cobertura es **100 %** en líneas, ramas, funciones y sentencias
 sobre todo el TypeScript de `src/`. Quedan fuera los archivos `.astro`, la
 configuración y las suites end-to-end.
 
+## Autoría
+
+**Mi Clima by IT Rosario** fue ideado, diseñado y pensado por **Juan Martín Villanueva** para **IT Rosario**.
+
+El código fuente fue generado íntegramente con IA mediante [OpenCode](https://github.com/sst/opencode) y el modelo **Big Pickle**, bajo dirección, revisión y supervisión del autor.
+
 ## Datos
 
 | Fuente               | Uso                                                       | Endpoint                                  |

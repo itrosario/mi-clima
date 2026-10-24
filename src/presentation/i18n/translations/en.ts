@@ -385,6 +385,8 @@ export const enTranslations: TranslationSchema = {
     repository: "Source code on GitHub",
     disclaimer:
       "A project by Juan Martín Villanueva for IT Rosario. Public-interest site compiling official data. No data is added or invented: when a source does not publish a reading, it is shown as missing.",
+    authorNote:
+      "Conceived, designed and planned by Juan Martín Villanueva for IT Rosario. The entire source code was AI-generated using OpenCode with the Big Pickle model, under the author's direction, review and supervision.",
     version: "Version {version}",
   },
 };

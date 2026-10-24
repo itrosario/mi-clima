@@ -387,6 +387,8 @@ export const esTranslations = {
     repository: "Código fuente en GitHub",
     disclaimer:
       "Un proyecto de Juan Martín Villanueva para IT Rosario. Sitio de uso público y recopilación de datos oficiales. No se agregan ni se inventan datos: cuando una fuente no publica una lectura, se muestra como faltante.",
+    authorNote:
+      "Ideado, diseñado y pensado por Juan Martín Villanueva para IT Rosario. Todo el código fuente ha sido generado íntegramente con IA mediante OpenCode y el modelo Big Pickle, bajo dirección, revisión y supervisión del autor.",
     version: "Version {version}",
   },
 } as const;

@@ -291,7 +291,11 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-2) var(--width-gutter);
-  background: linear-gradient(90deg, var(--color-water-evacuation) 0%, color-mix(in srgb, var(--color-water-evacuation) 85%, black) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--color-water-evacuation) 0%,
+    color-mix(in srgb, var(--color-water-evacuation) 85%, black) 100%
+  );
   color: var(--color-text-inverted);
   box-shadow: inset 0 -1px 0 rgb(255 255 255 / 0.14);
 }

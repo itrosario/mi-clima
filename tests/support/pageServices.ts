@@ -8,15 +8,21 @@
 import { vi } from "vitest";
 import type { Station } from "@/domain/catalog/types";
 import type { DownloadService } from "@/domain/ports/downloadService";
+import type { OfficialWeatherSource } from "@/domain/ports/officialWeatherSource";
 import type { PrefecturaSource } from "@/domain/ports/prefecturaSource";
 import type { StationCatalogSource } from "@/domain/ports/stationCatalogSource";
 import type { WeatherSource } from "@/domain/ports/weatherSource";
+import type {
+  OfficialWeatherObservation,
+  OfficialWeatherSnapshot,
+} from "@/domain/weather/official";
 import type { WeatherSnapshot } from "@/domain/weather/types";
 import type { AppServices } from "@/presentation/runtime/appServices";
 import {
   FakeCache,
   FakeClock,
   FakeHydrologySource,
+  FakeOfficialWeatherSource,
   FakePercentilesSource,
   FakeStationCatalogSource,
   FakeWeatherSource,
@@ -49,10 +55,31 @@ export const weatherSnapshot: WeatherSnapshot = {
   forecastSourceName: "Open-Meteo",
 };
 
+export const officialWeatherObservation: OfficialWeatherObservation = {
+  stationName: "ROSARIO AERO",
+  province: "SANTA FE",
+  location: { latitude: -32.9, longitude: -60.77 },
+  observedAt: new Date("2026-10-22T19:00:00.000Z"),
+  condition: "Parcialmente nublado",
+  visibilityKilometres: 15,
+  temperatureCelsius: 21.4,
+  apparentTemperatureCelsius: 20.8,
+  relativeHumidityPercent: 68,
+  windDirectionText: "Sur",
+  windSpeedKilometresPerHour: 14,
+  pressureHectopascals: 1012,
+};
+
+export const officialWeatherSnapshot: OfficialWeatherSnapshot = {
+  source: "SMN - Servicio Meteorologico Nacional",
+  observations: [officialWeatherObservation],
+};
+
 export interface PageServicesOptions {
   readonly stations?: readonly Station[];
   readonly hydrology?: FakeHydrologySource;
   readonly weather?: WeatherSource;
+  readonly officialWeather?: OfficialWeatherSource;
   readonly percentiles?: FakePercentilesSource;
   readonly clock?: FakeClock;
   readonly downloadService?: DownloadService;
@@ -80,6 +107,8 @@ export function createPageServices(options: PageServicesOptions = {}): AppServic
     percentilesSource: options.percentiles ?? new FakePercentilesSource({}),
     prefecturaSource: options.prefectura ?? createFakePrefecturaSource(),
     weatherSource: options.weather ?? new FakeWeatherSource(weatherSnapshot),
+    officialWeatherSource:
+      options.officialWeather ?? new FakeOfficialWeatherSource(officialWeatherSnapshot),
     downloadService: options.downloadService ?? { download: vi.fn() },
   };
 }
@@ -100,6 +129,14 @@ export function createFailingWeatherSource(): WeatherSource {
   return {
     async fetchWeather() {
       throw new Error("clima no disponible");
+    },
+  };
+}
+
+export function createFailingOfficialWeatherSource(): OfficialWeatherSource {
+  return {
+    async fetchSnapshot() {
+      throw new Error("SMN no disponible");
     },
   };
 }

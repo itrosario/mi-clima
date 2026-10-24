@@ -6,13 +6,21 @@
  * siempre junto a estos bloques, tambien en las pruebas.
  */
 
+import type { OfficialWeatherView } from "@/application/weather/loadOfficialWeather";
 import type { WeatherView } from "@/application/weather/loadWeather";
+import type { OfficialWeatherObservation } from "@/domain/weather/official";
 import type {
   WeatherCondition,
   WeatherForecastDay,
   WeatherObservation,
 } from "@/domain/weather/types";
-import { formatDate, formatMeasurement, formatPercent } from "../format/formatters";
+import {
+  formatDate,
+  formatDateTime,
+  formatMeasurement,
+  formatPercent,
+  missingValuePlaceholder,
+} from "../format/formatters";
 import type { Locale } from "../i18n/locales";
 import type { TranslationSchema } from "../i18n/translations/es";
 import { createEmptyState, createTextElement, renderInto } from "../runtime/dom";
@@ -138,6 +146,89 @@ export function createForecastTable(
     rows: forecast,
     emptyMessage: translations.weather.forecastEmpty,
   });
+}
+
+function createOfficialWeatherTiles(
+  document: Document,
+  observation: OfficialWeatherObservation,
+  locale: Locale,
+  translations: TranslationSchema,
+): readonly HTMLElement[] {
+  return [
+    createStatTile(document, {
+      label: translations.common.station,
+      value: `${observation.stationName} (${observation.province})`,
+      hint: null,
+    }),
+    createStatTile(document, {
+      label: translations.weather.observedBy,
+      value: formatDateTime(observation.observedAt, locale),
+      hint: null,
+    }),
+    createStatTile(document, {
+      label: translations.weather.temperature,
+      value: formatMeasurement(observation.temperatureCelsius, "\u00b0C", locale, 1),
+      hint: null,
+    }),
+    createStatTile(document, {
+      label: translations.weather.feelsLike,
+      value: formatMeasurement(observation.apparentTemperatureCelsius, "\u00b0C", locale, 1),
+      hint: null,
+    }),
+    createStatTile(document, {
+      label: translations.weather.humidity,
+      value: formatPercent(observation.relativeHumidityPercent, locale),
+      hint: null,
+    }),
+    createStatTile(document, {
+      label: translations.weather.pressure,
+      value: formatMeasurement(observation.pressureHectopascals, "hPa", locale, 1),
+      hint: null,
+    }),
+    createStatTile(document, {
+      label: translations.weather.wind,
+      value: formatMeasurement(observation.windSpeedKilometresPerHour, "km/h", locale, 0),
+      hint: observation.windDirectionText,
+    }),
+    createStatTile(document, {
+      label: translations.weather.condition,
+      value: observation.condition ?? missingValuePlaceholder,
+      hint: null,
+    }),
+  ];
+}
+
+/**
+ * Dibuja la observacion oficial del SMN.
+ *
+ * Si la fuente no publico una estacion con datos, se muestra el faltante
+ * explicito; nunca se reemplaza por el pronostico no oficial.
+ */
+export function renderOfficialWeather(
+  document: Document,
+  view: OfficialWeatherView | null,
+  locale: Locale,
+  translations: TranslationSchema,
+): void {
+  if (view === null || view.observation === null) {
+    renderInto(document, "[data-weather-official]", [
+      createEmptyState(document, translations.weather.officialEmpty),
+    ]);
+    renderInto(document, "[data-weather-official-source]", []);
+    return;
+  }
+
+  renderInto(document, "[data-weather-official]", [
+    ...createOfficialWeatherTiles(document, view.observation, locale, translations),
+  ]);
+
+  const source = createTextElement(
+    document,
+    "p",
+    "source-note",
+    `${translations.weather.officialSource} \u00b7 ${view.observation.stationName}`,
+  );
+  renderInto(document, "[data-weather-official-source]", [source]);
 }
 
 /**

@@ -8,11 +8,13 @@ import type { Station } from "@/domain/catalog/types";
 import type { CachePort } from "@/domain/ports/cache";
 import type { Clock } from "@/domain/ports/clock";
 import type { HydrologyRequest, HydrologySource } from "@/domain/ports/hydrologySource";
+import type { OfficialWeatherSource } from "@/domain/ports/officialWeatherSource";
 import type { PercentilesRequest, PercentilesSource } from "@/domain/ports/percentilesSource";
 import type { StationCatalogSource } from "@/domain/ports/stationCatalogSource";
 import type { WeatherRequest, WeatherSource } from "@/domain/ports/weatherSource";
 import { createSeries } from "@/domain/telemetry/series";
 import type { TelemetrySeries } from "@/domain/telemetry/types";
+import type { OfficialWeatherSnapshot } from "@/domain/weather/official";
 import type { WeatherSnapshot } from "@/domain/weather/types";
 
 export interface RecordedWrite {
@@ -122,6 +124,21 @@ export class FakePercentilesSource implements PercentilesSource {
     this.calls.push({ request, signal });
 
     return this.tables[request.stationId] ?? null;
+  }
+}
+
+export class FakeOfficialWeatherSource implements OfficialWeatherSource {
+  readonly signals: (AbortSignal | undefined)[] = [];
+  private readonly snapshot: OfficialWeatherSnapshot;
+
+  constructor(snapshot: OfficialWeatherSnapshot) {
+    this.snapshot = snapshot;
+  }
+
+  async fetchSnapshot(signal?: AbortSignal): Promise<OfficialWeatherSnapshot> {
+    this.signals.push(signal);
+
+    return this.snapshot;
   }
 }
 

@@ -94,7 +94,7 @@ describe("loadVapidKeys", () => {
         generateKey: originalGenerateKey,
         exportKey: vi.fn(async () => ({ x: undefined, y: undefined, d: undefined })),
       },
-    } as Crypto);
+    } as unknown as Crypto);
     await expect(generateVapidKeys()).rejects.toThrow(/No se pudieron exportar/i);
     vi.stubGlobal("crypto", {
       ...crypto,
@@ -103,7 +103,7 @@ describe("loadVapidKeys", () => {
         generateKey: originalGenerateKey,
         exportKey: originalExportKey,
       },
-    } as Crypto);
+    } as unknown as Crypto);
   });
 
   it("falla si las claves exportadas no decodifican", async () => {
@@ -125,7 +125,7 @@ describe("loadVapidKeys", () => {
           return originalExportKey(format, key);
         }),
       },
-    } as Crypto);
+    } as unknown as Crypto);
     await expect(generateVapidKeys()).rejects.toThrow(/no son validas/i);
     vi.stubGlobal("crypto", globalThis.crypto);
   });

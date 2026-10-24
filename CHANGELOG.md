@@ -19,6 +19,7 @@ el proyecto sigue [Semantic Versioning](https://semver.org/lang/es/).
 - Autoría visible de Juan Martín Villanueva para IT Rosario en el pie, la página
   de fuentes y los metadatos del documento, junto con el propósito público del
   sitio y la aclaración de que no se agregan ni inventan datos.
+- Observaciones oficiales del tiempo presente del SMN en la página de clima, cruzadas por proximidad con su red de estaciones y mostradas junto al pronóstico de Open-Meteo (etiquetado como no oficial). Se obtienen vía `/api/smn` desde `ssl.smn.gob.ar/dpd/zipopendata.php`, se normalizan sin inventar valores faltantes y se cachean 5 minutos en el borde; el texto de la condición se reproduce tal como lo publica el SMN.
 - Selector de vista del gráfico del panel: nivel absoluto o índice contra el
   promedio de cada estación (`100 = promedio`), calculado solo con lecturas
   reales y sin proyectar valores futuros.

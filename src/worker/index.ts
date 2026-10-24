@@ -2,9 +2,9 @@
  * Entrada del Worker de Cloudflare.
  *
  * El sitio es estatico: los assets se sirven desde `dist` y el Worker atiende
- * los proxies de datos de INA, Open-Meteo y Prefectura Naval, la API de avisos
- * push y el Cron que revisa las estaciones. Las respuestas exitosas de datos se
- * comparten en la cache del borde del runtime de Cloudflare.
+ * los proxies de datos de INA, Open-Meteo, SMN y Prefectura Naval, la API de
+ * avisos push y el Cron que revisa las estaciones. Las respuestas exitosas de
+ * datos se comparten en la cache del borde del runtime de Cloudflare.
  */
 
 import {
@@ -17,6 +17,7 @@ import {
 import type { AlertWorkerEnvironment } from "./alertTypes";
 import { handleInaRequest, inaWorkerPath } from "./inaWorker";
 import { handlePrefecturaRequest, type WorkerCache } from "./prefecturaWorker";
+import { handleSmnRequest, smnWorkerPath } from "./smnWorker";
 import { handleWeatherRequest, weatherWorkerPath } from "./weatherWorker";
 
 interface CloudflareCacheStorage {
@@ -47,6 +48,10 @@ export default {
 
     if (pathname === weatherWorkerPath) {
       return handleWeatherRequest(request, dependencies);
+    }
+
+    if (pathname === smnWorkerPath) {
+      return handleSmnRequest(request, dependencies);
     }
 
     return handlePrefecturaRequest(request, dependencies);

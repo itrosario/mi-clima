@@ -224,7 +224,12 @@ export const esTranslations = {
   },
   weather: {
     title: "Clima",
-    lead: "Condicion actual y pronostico. Los observados provienen de redes oficiales; el pronostico, de Open-Meteo.",
+    eyebrow: "Observacion oficial y pronostico no oficial",
+    lead: "Observacion oficial del SMN y pronostico de Open-Meteo, cada uno identificado con su fuente.",
+    officialTitle: "Observacion oficial del SMN",
+    officialSource: "Observacion oficial del SMN",
+    officialEmpty:
+      "No hay una observacion oficial del SMN disponible en este momento. El pronostico no oficial se muestra por separado.",
     currentTitle: "Condicion actual",
     forecastTitle: "Pronostico",
     temperature: "Temperatura",
@@ -360,7 +365,7 @@ export const esTranslations = {
       "Escalas navales del Parana y rios de la Cuenca del Plata. Se consultan a traves de un proxy propio del sitio para evitar las restricciones de origen del navegador.",
     smnTitle: "SMN - Servicio Meteorologico Nacional",
     smnDescription:
-      "Alertas meteorologicas y observados de las Estaciones Meteorologicas Automaticas, publicados por el INA dentro de la red climatologica nacional.",
+      "Servicio Meteorológico Nacional (Argentina). Observaciones oficiales del tiempo presente de su red de estaciones. Se consultan vía el proxy /api/smn: el Worker descarga https://ssl.smn.gob.ar/dpd/zipopendata.php?dato=tiepre y ?dato=estaciones, los descomprime, cruza por nombre con las coordenadas oficiales y normaliza sin inventar valores faltantes. El texto de la condición se reproduce tal como lo publica el SMN. Los datos se cachean cinco minutos en el borde. La hidrometría, umbrales y alertas de inundación siguen siendo únicamente del INA.",
     openMeteoTitle: "Open-Meteo",
     openMeteoDescription:
       "Pronostico y archive meteorologico con licencia abierta. Es la unica fuente no oficial del sitio y se identifica como tal en cada bloque.",

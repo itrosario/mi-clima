@@ -10,6 +10,7 @@ import type { CachePort } from "@/domain/ports/cache";
 import { type Clock, systemClock } from "@/domain/ports/clock";
 import type { DownloadService } from "@/domain/ports/downloadService";
 import type { HydrologySource } from "@/domain/ports/hydrologySource";
+import type { OfficialWeatherSource } from "@/domain/ports/officialWeatherSource";
 import type { PercentilesSource } from "@/domain/ports/percentilesSource";
 import type { PrefecturaSource } from "@/domain/ports/prefecturaSource";
 import type { StationCatalogSource } from "@/domain/ports/stationCatalogSource";
@@ -24,6 +25,7 @@ import { InaPercentilesSource } from "@/infrastructure/ina/inaPercentilesSource"
 import { InaStationCatalogSource } from "@/infrastructure/ina/inaStationCatalogSource";
 import { OpenMeteoSource, openMeteoForecastUrl } from "@/infrastructure/openMeteo/openMeteoSource";
 import { PrefecturaApiSource } from "@/infrastructure/prefectura/prefecturaApiSource";
+import { SmnSource } from "@/infrastructure/smn/smnSource";
 
 export interface AppServices {
   readonly clock: Clock;
@@ -34,6 +36,7 @@ export interface AppServices {
   readonly percentilesSource: PercentilesSource;
   readonly prefecturaSource: PrefecturaSource;
   readonly weatherSource: WeatherSource;
+  readonly officialWeatherSource: OfficialWeatherSource;
   readonly downloadService: DownloadService;
 }
 
@@ -75,6 +78,7 @@ export function createAppServices(options: AppServicesOptions = {}): AppServices
     weatherSource: import.meta.env.DEV
       ? new OpenMeteoSource(http, openMeteoForecastUrl)
       : new OpenMeteoSource(http),
+    officialWeatherSource: new SmnSource(http),
     downloadService: new BlobDownloadService(document),
   };
 }

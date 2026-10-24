@@ -151,15 +151,16 @@ describe("parseSubscriptionPayload", () => {
 
   it("lee suscripciones guardadas con createdAt/updatedAt", async () => {
     const kv = new FakeAlertKv();
-    const payload = validSubscriptionPayload();
+    const endpoint = "https://fcm.googleapis.com/fcm/send/test-endpoint";
+    const payload = validSubscriptionPayload({ endpoint });
     const stored = {
       ...payload,
       createdAt: "2026-01-01T00:00:00.000Z",
       updatedAt: "2026-01-02T00:00:00.000Z",
     };
-    const id = await subscriptionStorageId(payload.endpoint);
+    const id = await subscriptionStorageId(endpoint);
     await kv.put(subscriptionStorageKey(id), JSON.stringify(stored));
-    const read = await readSubscription(kv, payload.endpoint);
+    const read = await readSubscription(kv, endpoint);
     expect(read?.createdAt).toBe("2026-01-01T00:00:00.000Z");
   });
 

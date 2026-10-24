@@ -222,7 +222,12 @@ export const enTranslations: TranslationSchema = {
   },
   weather: {
     title: "Weather",
-    lead: "Current conditions and forecast. Observations come from official networks; the forecast comes from Open-Meteo.",
+    eyebrow: "Official observation and unofficial forecast",
+    lead: "Official SMN observation and Open-Meteo forecast, each labelled with its source.",
+    officialTitle: "Official SMN observation",
+    officialSource: "Official SMN observation",
+    officialEmpty:
+      "No official SMN observation is available right now. The unofficial forecast is shown separately.",
     currentTitle: "Current conditions",
     forecastTitle: "Forecast",
     temperature: "Temperature",
@@ -358,7 +363,7 @@ export const enTranslations: TranslationSchema = {
       "Naval scales of the Parana and Plata Basin rivers. They are queried through the site's own proxy to avoid browser origin restrictions.",
     smnTitle: "SMN - National Meteorological Service",
     smnDescription:
-      "Weather warnings and observations from the Automatic Weather Stations, published by INA within the national climatological network.",
+      "Servicio Meteorológico Nacional (Argentina). Official present-weather observations from its station network. Fetched via the /api/smn proxy: the Worker downloads https://ssl.smn.gob.ar/dpd/zipopendata.php?dato=tiepre and ?dato=estaciones, decompresses ZIP files, matches by station name against the official catalogue and normalises without inventing missing values. The condition text is reproduced as published by SMN. Cached five minutes at the edge. Hydrometry, thresholds and flood alerts remain INA-only.",
     openMeteoTitle: "Open-Meteo",
     openMeteoDescription:
       "Forecast and meteorological archive under an open licence. It is the only non official source on the site and is labelled as such on every block.",

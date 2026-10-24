@@ -146,6 +146,7 @@ configuración y las suites end-to-end.
 | INA                  | Estaciones, niveles, umbrales y percentiles               | `alerta.ina.gob.ar/pub/datos/`            |
 | INTA                 | Serie hidrométrica alternativa, visible vía INA           | `alerta.ina.gob.ar/pub/datos/`            |
 | Prefectura Naval     | Alturas de escala de los puertos del corredor             | `contenidosweb.prefecturanaval.gob.ar`    |
+| SMN                  | Observación oficial del tiempo presente (vía /api/smn)   | `ssl.smn.gob.ar/dpd/zipopendata.php`     |
 | Open-Meteo           | Condición actual y pronóstico (fuente no oficial)         | `api.open-meteo.com`                      |
 
 El INA exige `POST` con cuerpo `application/x-www-form-urlencoded`; las

@@ -1,6 +1,6 @@
 /** @vitest-environment happy-dom */
 
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getTranslations } from "@/presentation/i18n";
 import {
   distanceKilometres,
@@ -51,6 +51,10 @@ describe("alert subscription helpers", () => {
 });
 
 describe("initAlertSubscription", () => {
+  beforeEach(() => {
+    vi.stubGlobal("PushManager", class PushManager {});
+  });
+
   afterEach(() => {
     vi.unstubAllGlobals();
     document.body.innerHTML = "";
@@ -133,7 +137,7 @@ describe("initAlertSubscription", () => {
     const storage = { getItem: () => null, setItem: vi.fn(), removeItem: vi.fn() };
     const geolocation = {
       getCurrentPosition: vi.fn((_s, err) =>
-        err?.(new Error("denied") as GeolocationPositionError),
+        err?.(new Error("denied") as unknown as GeolocationPositionError),
       ),
     };
     initAlertSubscription(doc, stations, "es", translations, {
@@ -183,7 +187,7 @@ describe("initAlertSubscription", () => {
     const storage = { getItem: () => null, setItem: vi.fn(), removeItem: vi.fn() };
     const geolocation = {
       getCurrentPosition: vi.fn((success) =>
-        success({ coords: { latitude: -34, longitude: -58 } } as GeolocationPosition),
+        success({ coords: { latitude: -54.8, longitude: -68.3 } } as GeolocationPosition),
       ),
     };
     initAlertSubscription(doc, stations, "es", translations, {

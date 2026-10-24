@@ -34,6 +34,7 @@ describe("createAppServices", () => {
     expect(services.hydrologySource).toBeDefined();
     expect(services.percentilesSource).toBeDefined();
     expect(services.weatherSource).toBeDefined();
+    expect(services.officialWeatherSource).toBeDefined();
     expect(services.downloadService).toBeDefined();
   });
 
@@ -44,6 +45,7 @@ describe("createAppServices", () => {
 
     expect(services.hydrologySource).toBeDefined();
     expect(services.weatherSource).toBeDefined();
+    expect(services.officialWeatherSource).toBeDefined();
   });
 
   it("arma los proxies cuando la app corre compilada", () => {
@@ -53,6 +55,7 @@ describe("createAppServices", () => {
 
     expect(services.hydrologySource).toBeDefined();
     expect(services.weatherSource).toBeDefined();
+    expect(services.officialWeatherSource).toBeDefined();
   });
 
   it("acepta almacenamiento, documento, reloj y transporte inyectados", async () => {

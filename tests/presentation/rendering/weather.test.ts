@@ -1,15 +1,18 @@
 /** @vitest-environment happy-dom */
 
 import { describe, expect, it } from "vitest";
+import type { OfficialWeatherView } from "@/application/weather/loadOfficialWeather";
 import type { WeatherView } from "@/application/weather/loadWeather";
 import { getTranslations } from "@/presentation/i18n";
-import { renderWeatherBlocks } from "@/presentation/rendering/weather";
-import { weatherSnapshot } from "../../support/pageServices";
+import { renderOfficialWeather, renderWeatherBlocks } from "@/presentation/rendering/weather";
+import { officialWeatherObservation, weatherSnapshot } from "../../support/pageServices";
 
 const translations = getTranslations("es");
 
 function prepareDocument(): Document {
   window.document.body.innerHTML = `
+    <div data-weather-official></div>
+    <div data-weather-official-source></div>
     <div data-weather-current></div>
     <div data-weather-forecast></div>
     <div data-weather-source></div>
@@ -17,6 +20,85 @@ function prepareDocument(): Document {
 
   return window.document;
 }
+
+function createOfficialView(): OfficialWeatherView {
+  return {
+    observation: officialWeatherObservation,
+    fetchedAt: new Date("2026-10-22T19:05:00.000Z"),
+    isOfficial: true,
+    attribution: {
+      name: "SMN - Servicio Meteorologico Nacional",
+      url: "https://www.smn.gob.ar/",
+      isThirdParty: false,
+    },
+  };
+}
+
+describe("renderOfficialWeather", () => {
+  it("dibuja la observacion oficial y su procedencia", () => {
+    const document = prepareDocument();
+
+    renderOfficialWeather(document, createOfficialView(), "es", translations);
+
+    expect(document.querySelector("[data-weather-official]")?.textContent).toContain(
+      "ROSARIO AERO",
+    );
+    expect(document.querySelector("[data-weather-official]")?.textContent).toContain(
+      "Parcialmente nublado",
+    );
+    expect(document.querySelector("[data-weather-official-source]")?.textContent).toContain("SMN");
+  });
+
+  it("explica cuando no hay observacion oficial", () => {
+    const document = prepareDocument();
+
+    renderOfficialWeather(
+      document,
+      { ...createOfficialView(), observation: null },
+      "es",
+      translations,
+    );
+
+    expect(document.querySelector("[data-weather-official]")?.textContent).toContain(
+      "No hay una observacion oficial",
+    );
+    expect(document.querySelector("[data-weather-official-source]")?.textContent).toBe("");
+  });
+
+  it("explica el faltante cuando la consulta fallo", () => {
+    const document = prepareDocument();
+
+    renderOfficialWeather(document, null, "es", translations);
+
+    expect(document.querySelector("[data-weather-official]")?.textContent).toContain(
+      "No hay una observacion oficial",
+    );
+  });
+
+  it("muestra guiones cuando faltan valores oficiales", () => {
+    const document = prepareDocument();
+
+    renderOfficialWeather(
+      document,
+      {
+        ...createOfficialView(),
+        observation: {
+          ...officialWeatherObservation,
+          apparentTemperatureCelsius: null,
+          relativeHumidityPercent: null,
+          pressureHectopascals: null,
+          windSpeedKilometresPerHour: null,
+          windDirectionText: null,
+          condition: null,
+        },
+      },
+      "es",
+      translations,
+    );
+
+    expect(document.querySelector("[data-weather-official]")?.textContent).toContain("—");
+  });
+});
 
 function createView(overrides: Partial<WeatherView> = {}): WeatherView {
   return {

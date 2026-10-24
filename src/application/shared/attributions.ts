@@ -26,6 +26,12 @@ export const intaAttribution: SourceAttribution = {
   isThirdParty: false,
 };
 
+export const smnAttribution: SourceAttribution = {
+  name: "SMN - Servicio Meteorologico Nacional",
+  url: "https://www.smn.gob.ar/",
+  isThirdParty: false,
+};
+
 export const openMeteoAttribution: SourceAttribution = {
   name: "Open-Meteo",
   url: "https://open-meteo.com/",

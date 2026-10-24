@@ -224,11 +224,7 @@ export async function listSubscriptions(
       }
     }
 
-    if (
-      page.listComplete === true ||
-      page.list_complete === true ||
-      page.cursor === undefined
-    ) {
+    if (page.listComplete === true || page.list_complete === true || page.cursor === undefined) {
       return subscriptions;
     }
 

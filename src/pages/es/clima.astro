@@ -16,10 +16,18 @@ const translations = getTranslations(locale);
 >
   <div class="u-container page-section">
     <PageHeader
-      eyebrow={translations.dashboard.unofficialSource}
+      eyebrow={translations.weather.eyebrow}
       title={translations.weather.title}
       lead={translations.weather.lead}
     />
+
+    <section class="section" aria-labelledby="weather-official-title">
+      <h2 id="weather-official-title" class="section__title">
+        {translations.weather.officialTitle}
+      </h2>
+      <div class="stat-grid" data-weather-official></div>
+      <p class="source-note" data-weather-official-source></p>
+    </section>
 
     <section class="section" aria-labelledby="weather-current-title">
       <h2 id="weather-current-title" class="section__title">

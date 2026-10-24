@@ -24,7 +24,10 @@ misma lectura durante la hora. Las suscripciones a avisos Web Push se guardan
 en KV (binding `ALERTS`) con los datos mínimos necesarios (endpoint, claves de
 cifrado y estaciones elegidas); no se guardan coordenadas ni identificadores
 personales. Un Cron Trigger de Cloudflare ejecuta el monitor cada 15 minutos
-para revisar las estaciones. No se guardan series históricas en el servidor.
+para revisar las estaciones. Las alertas se publican automáticamente en el canal
+público de Telegram (`@MiClimaAlertas`) junto a los Web Push, usando los secrets
+`TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHANNEL_ID` (o `.dev.vars` en local). No se
+guardan series históricas en el servidor.
 
 ---
 
@@ -39,8 +42,10 @@ para revisar las estaciones. No se guardan series históricas en el servidor.
   las alturas publicadas por la Prefectura Naval. Suscripción opcional a avisos
   Web Push por dispositivo (geolocalización solo en el navegador, selección
   manual, sin coordenadas en el servidor). Los avisos derivan de umbrales
-  oficiales del INA y no son un boletín oficial de emergencia. En iOS/iPadOS
-  16.4+ es necesario tener la app instalada.
+  oficiales del INA y no son un boletín oficial de emergencia. Canal público
+  de alertas en Telegram (`@MiClimaAlertas`), con publicaciones automáticas
+  bilingües junto a los Web Push. En iOS/iPadOS 16.4+ es necesario tener la app
+  instalada.
 - **Ríos** — catálogo navegable de ríos, tramos y estaciones hidrométricas de la
   Cuenca del Plata, con búsqueda en vivo.
 - **Estaciones** — catálogo completo y ficha de cada escala con los últimos 90
@@ -67,7 +72,7 @@ para revisar las estaciones. No se guardan series históricas en el servidor.
 | Tipografía     | Monaspace (autoalojada) + Source Serif 4                         |
 | Tests          | Vitest 5 + happy-dom, Playwright y axe-core                      |
 | Calidad        | Biome (lint + format) e Impeccable                               |
-| Backend        | Worker con proxies de INA, Open-Meteo y Prefectura, caché de borde, API de avisos push, KV y Cron Trigger cada 15 minutos |
+| Backend        | Worker con proxies de INA, Open-Meteo y Prefectura, caché de borde, API de avisos push, publicación en canal público de Telegram, KV y Cron Trigger cada 15 minutos |
 | PWA            | Manifest por idioma, iconos instalables, service worker propio y avisos Web Push |
 | Deploy         | Cloudflare Workers (Static Assets) con Wrangler                  |
 

@@ -145,6 +145,9 @@ export const enTranslations: TranslationSchema = {
   alerts: {
     title: "Flood alerts",
     lead: "Status light for each station, computed against the official alert and evacuation thresholds.",
+    telegramTitle: "Alerts on Telegram",
+    telegramLead: "Receive flood alerts on the public Telegram channel, alongside Web Push notifications.",
+    telegramLinkLabel: "Join the channel",
     mapTitle: "Station map",
     listTitle: "Status by station",
     level: "Current level",

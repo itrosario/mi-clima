@@ -146,6 +146,9 @@ export const esTranslations = {
   alerts: {
     title: "Alertas de inundacion",
     lead: "Semaforo de estado por estacion, calculado contra los umbrales oficiales de alerta y evacuacion.",
+    telegramTitle: "Alertas por Telegram",
+    telegramLead: "Recibi alertas de inundacion en el canal publico de Telegram, junto a los avisos Web Push.",
+    telegramLinkLabel: "Unirse al canal",
     mapTitle: "Mapa de estaciones",
     listTitle: "Estado por estacion",
     level: "Nivel actual",

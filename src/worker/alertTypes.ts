@@ -75,4 +75,6 @@ export interface AlertWorkerEnvironment {
   readonly VAPID_PUBLIC_KEY?: string;
   readonly VAPID_PRIVATE_KEY?: string;
   readonly VAPID_SUBJECT?: string;
+  readonly TELEGRAM_BOT_TOKEN?: string;
+  readonly TELEGRAM_CHANNEL_ID?: string;
 }

@@ -37,6 +37,7 @@ import type {
 } from "./alertTypes";
 import type { WorkerCache } from "./edgeCache";
 import { handleInaRequest } from "./inaWorker";
+import { publishTelegramAlert } from "./telegram";
 import { loadVapidKeys, type VapidConfig, vapidSubject } from "./vapid";
 
 const rapidRiseSixHourMetres = 0.3;
@@ -349,7 +350,27 @@ async function deliverEvents(
       return { status: response.status };
     });
 
+  const stationNameById = new Map(selectCorridorStations().map((station) => [station.id, station.name]));
+
   for (const event of events) {
+    const stationName = stationNameById.get(event.stationId) ?? event.stationId;
+    const telegramEventType = event.type === "rapid-rise" ? "rapid-rise" : event.type;
+
+    if (telegramEventType === "alert" || telegramEventType === "evacuation" || telegramEventType === "rapid-rise") {
+      void publishTelegramAlert(
+        dependencies.environment ?? {},
+        {
+          stationName,
+          stationId: event.stationId,
+          locale: "es",
+          eventType: telegramEventType,
+          level: event.level,
+          statusLabel: event.type,
+        },
+        fetchImplementation,
+      );
+    }
+
     const recipients = subscriptions.filter((subscription) =>
       subscription.stationIds.includes(event.stationId),
     );
